@@ -8,7 +8,7 @@ module lending_core::incentive_v3_test_target {
     use std::ascii::{Self, String};
     use std::vector::{Self};
     use sui::transfer;
-    use math::ray_math::{Self};
+    use navi_math::ray_math::{Self};
     use sui::vec_map::{Self, VecMap};
 
     use oracle::oracle::{Self, OracleAdminCap, PriceOracle};
@@ -80,7 +80,7 @@ module lending_core::incentive_v3_test_target {
         incentive_v3_util::user_withdraw<BTC_TEST_V2>(scenario_mut, OWNER, 3, 1000_000000000, &clock);
 
         clock::destroy_for_testing(clock);
-        test_scenario::end(scenario);  
+        test_scenario::end(scenario);
     }
 
 
@@ -102,7 +102,7 @@ module lending_core::incentive_v3_test_target {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
             // configured from init_protocol
             let (_, asset_id, coin_type, rule_num) = incentive_v3::get_asset_pool_params_for_testing<SUI_TEST_V2>(&incentive);
-            
+
             assert!(asset_id == 0, 0);
             assert!(coin_type == type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
             assert!(rule_num == 8, 0);
@@ -237,7 +237,7 @@ module lending_core::incentive_v3_test_target {
         let scenario = test_scenario::begin(OWNER);
         let scenario_mut = &mut scenario;
 
-        { 
+        {
             incentive_v3_util::init_protocol( scenario_mut);
         };
 
@@ -281,7 +281,7 @@ module lending_core::incentive_v3_test_target {
 
             let (coin_type, amount) = incentive_v3::get_reward_fund_params_for_testing<USDC_TEST_V2>(&usdc_funds);
             assert!(coin_type == type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
-            assert!(amount == 1000000_000000, 0);  
+            assert!(amount == 1000000_000000, 0);
 
             let (coin_type, amount) = incentive_v3::get_reward_fund_params_for_testing<ETH_TEST_V2>(&eth_funds);
             assert!(coin_type == type_name::into_string(type_name::get<ETH_TEST_V2>()), 0);
@@ -310,7 +310,7 @@ module lending_core::incentive_v3_test_target {
             incentive_v3_util::init_protocol( scenario_mut);
         };
 
-        // deposit fund 
+        // deposit fund
         test_scenario::next_tx(scenario_mut, OWNER);
         {
             let owner_cap = test_scenario::take_from_sender<IncentiveOwnerCap>(scenario_mut);
@@ -361,8 +361,8 @@ module lending_core::incentive_v3_test_target {
             test_scenario::return_shared(sui_funds);
             test_scenario::return_to_sender(scenario_mut, coin);
         };
-        
-        test_scenario::end(scenario);  
+
+        test_scenario::end(scenario);
     }
 
     // Should withdraw_funds fail when the withdrawal amount exceeds the available balance
@@ -405,7 +405,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::next_tx(scenario_mut, alice);
         {
             incentive_v3_util::user_deposit<SUI_TEST_V2>(scenario_mut, alice, 0, 1000_000000000, &clock);
-        }; 
+        };
 
 
         // claim half day reward
@@ -481,22 +481,22 @@ module lending_core::incentive_v3_test_target {
         test_scenario::next_tx(scenario_mut, bob);
         {
             incentive_v3_util::user_deposit<SUI_TEST_V2>(scenario_mut, bob, 0, 1000_000000000, &clock);
-        }; 
+        };
 
         // user A deposit 10000 USDC
         test_scenario::next_tx(scenario_mut, alice);
         {
             incentive_v3_util::user_deposit<USDC_TEST_V2>(scenario_mut, alice, 1, 10000_000000, &clock);
-        }; 
+        };
 
         // user A borrow 100 SUI
         test_scenario::next_tx(scenario_mut, alice);
         {
             incentive_v3_util::user_borrow<SUI_TEST_V2>(scenario_mut, alice, 0, 100_000000000, &clock);
-        }; 
+        };
         let alice_sui_amount = incentive_v3_util::get_coin_amount<SUI_TEST_V2>(scenario_mut, alice);
         assert!(alice_sui_amount == 100_000000000, 0);
-        
+
 
         // claim half day reward
         test_scenario::next_tx(scenario_mut, alice);
@@ -510,7 +510,7 @@ module lending_core::incentive_v3_test_target {
             let (addr, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 3);
             lib::printf(b"index1:");
             lib::print(&idx);
-            
+
             vector::push_back(&mut rule_ids, addr);
 
             incentive_v3::claim_reward_entry<SUI_TEST_V2>(&clock, &mut incentive, &mut storage, &mut sui_funds, vector::singleton(type_name::into_string(type_name::get<SUI_TEST_V2>())), rule_ids, test_scenario::ctx(scenario_mut));
@@ -549,12 +549,12 @@ module lending_core::incentive_v3_test_target {
         // user B deposit 1000 SUI
         // user A borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            alice, 
-            100_000000000, 
-            bob, 
-            1000_000000000, 
+            scenario_mut,
+            0,
+            alice,
+            100_000000000,
+            bob,
+            1000_000000000,
             &clock);
 
         // update index
@@ -610,7 +610,7 @@ module lending_core::incentive_v3_test_target {
 
             // update index for 1 day
             clock::set_for_testing(&mut clock, 60 * 60 * 24 * 1000);
-            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage); 
+            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage);
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 1);
             lib::printf(b"1d index1:");
@@ -665,7 +665,7 @@ module lending_core::incentive_v3_test_target {
         // 50 * 3650*1e9 = 182,500,000,000,000
         assert!(alice_sui_amount == 182500000000000, 0);
 
-        // bob claim reward 
+        // bob claim reward
         incentive_v3_util::user_claim_reward<SUI_TEST_V2, SUI_TEST_V2>(scenario_mut, bob, 1, &clock);
         let bob_sui_amount = incentive_v3_util::get_coin_amount<SUI_TEST_V2>(scenario_mut, bob);
         lib::printf(b"bob_sui_amount:");
@@ -721,12 +721,12 @@ module lending_core::incentive_v3_test_target {
         // user B deposit 1000 SUI
         // user A borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            alice, 
-            100_000000000, 
-            bob, 
-            1000_000000000, 
+            scenario_mut,
+            0,
+            alice,
+            100_000000000,
+            bob,
+            1000_000000000,
             &clock);
 
         // update index
@@ -782,7 +782,7 @@ module lending_core::incentive_v3_test_target {
 
             // update index for 1 day
             clock::set_for_testing(&mut clock, 60 * 60 * 24 * 1000);
-            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage); 
+            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage);
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, USDC_TEST_V2>(&incentive, 1);
             lib::printf(b"1d index1:");
@@ -837,7 +837,7 @@ module lending_core::incentive_v3_test_target {
         // 50 * 3650*1e6 = 182,500,000,000
         assert!(alice_sui_amount == 182500000000, 0);
 
-        // bob claim reward 
+        // bob claim reward
         incentive_v3_util::user_claim_reward<SUI_TEST_V2, USDC_TEST_V2>(scenario_mut, bob, 1, &clock);
         let bob_sui_amount = incentive_v3_util::get_coin_amount<USDC_TEST_V2>(scenario_mut, bob);
         lib::printf(b"bob_usdc_amount:");
@@ -894,12 +894,12 @@ module lending_core::incentive_v3_test_target {
         // user B deposit 1000 SUI
         // user A borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            alice, 
-            100_000000000, 
-            bob, 
-            1000_000000000, 
+            scenario_mut,
+            0,
+            alice,
+            100_000000000,
+            bob,
+            1000_000000000,
             &clock);
 
         // update index
@@ -914,11 +914,11 @@ module lending_core::incentive_v3_test_target {
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 1);
             lib::printf(b"1s index1:");
-            lib::print(&idx); 
+            lib::print(&idx);
             assert!(idx == 1157407407407407407407407, 0);
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 3);
             lib::printf(b"1s index3:");
-            lib::print(&idx);  
+            lib::print(&idx);
             assert!(idx == 5787037037037037037037037, 0);
 
             // update index for 1 minute
@@ -927,12 +927,12 @@ module lending_core::incentive_v3_test_target {
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 1);
             lib::printf(b"1m index1:");
-            lib::print(&idx); // 
+            lib::print(&idx); //
             assert!(idx == 69444444444444444444444444, 0);
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 3);
-            lib::printf(b"1m index3:"); // 
+            lib::printf(b"1m index3:"); //
             assert!(idx == 347222222222222222222222222, 0);
-            lib::print(&idx); // 
+            lib::print(&idx); //
 
             // update index for 1 hour
             clock::set_for_testing(&mut clock, 60 * 60 * 1000);
@@ -940,23 +940,23 @@ module lending_core::incentive_v3_test_target {
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 1);
             lib::printf(b"1h index1:");
-            lib::print(&idx); // 
+            lib::print(&idx); //
             assert!(idx == 4166666666666666666666666666, 0);
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 3);
-            lib::printf(b"1h index3:"); // 
+            lib::printf(b"1h index3:"); //
             assert!(idx == 20833333333333333333333333333, 0);
             lib::print(&idx);
 
             // update index for 1 day
             clock::set_for_testing(&mut clock, 60 * 60 * 24 * 1000);
-            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage); 
+            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage);
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 1);
             lib::printf(b"1d index1:");
-            lib::print(&idx); // 
+            lib::print(&idx); //
             assert!(idx == 99999999999999999999999999999, 0);
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 3);
-            lib::printf(b"1d index3:"); // 
+            lib::printf(b"1d index3:"); //
             assert!(idx == 499999999999999999999999999999, 0);
             lib::print(&idx);
 
@@ -966,10 +966,10 @@ module lending_core::incentive_v3_test_target {
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 1);
             lib::printf(b"1y index1:");
-            lib::print(&idx); // 
+            lib::print(&idx); //
             assert!(idx == 36499999999999999999999999999998, 0);
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 3);
-            lib::printf(b"1y index3:"); // 
+            lib::printf(b"1y index3:"); //
             lib::print(&idx);
             assert!(idx == 182499999999999999999999999999999, 0);
 
@@ -979,10 +979,10 @@ module lending_core::incentive_v3_test_target {
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 1);
             lib::printf(b"10y index1:");
-            lib::print(&idx); 
+            lib::print(&idx);
             assert!(idx == 364999999999999999999999999999997, 0);
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, COIN_TEST_V2>(&incentive, 3);
-            lib::printf(b"10y index3:"); 
+            lib::printf(b"10y index3:");
             lib::print(&idx);
             assert!(idx == 1824999999999999999999999999999999, 0);
 
@@ -997,7 +997,7 @@ module lending_core::incentive_v3_test_target {
         lib::print(&alice_sui_amount);
         assert!(alice_sui_amount == 182500000000000000, 0);
 
-        // bob claim reward 
+        // bob claim reward
         incentive_v3_util::user_claim_reward<SUI_TEST_V2, COIN_TEST_V2>(scenario_mut, bob, 1, &clock);
         let bob_sui_amount = incentive_v3_util::get_coin_amount<COIN_TEST_V2>(scenario_mut, bob);
         lib::printf(b"bob_test_amount:");
@@ -1024,12 +1024,12 @@ module lending_core::incentive_v3_test_target {
         // user d deposit 1000 SUI
         // user c borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            @0xcc, 
-            100_000000000, 
-            @0xdd, 
-            1000_000000000, 
+            scenario_mut,
+            0,
+            @0xcc,
+            100_000000000,
+            @0xdd,
+            1000_000000000,
             &clock);
 
         test_scenario::next_tx(scenario_mut, alice);
@@ -1057,12 +1057,12 @@ module lending_core::incentive_v3_test_target {
         // user B deposit 1000 SUI
         // user A borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            alice, 
-            100_000000000, 
-            bob, 
-            1000_000000000, 
+            scenario_mut,
+            0,
+            alice,
+            100_000000000,
+            bob,
+            1000_000000000,
             &clock);
 
         // update index
@@ -1121,7 +1121,7 @@ module lending_core::incentive_v3_test_target {
 
             // update index for 1 day
             clock::set_for_testing(&mut clock, 60 * 60 * 24 * 1000 + year_ms);
-            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage); 
+            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage);
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 1);
             lib::printf(b"1d index1:");
@@ -1177,7 +1177,7 @@ module lending_core::incentive_v3_test_target {
         // 50 * 3650*1e9 = 182,500,000,000,000
         lib::close_to_p((alice_sui_amount as u256), 182500000000000 / 2, 100);
 
-        // bob claim reward 
+        // bob claim reward
         incentive_v3_util::user_claim_reward<SUI_TEST_V2, SUI_TEST_V2>(scenario_mut, bob, 1, &clock);
         let bob_sui_amount = incentive_v3_util::get_coin_amount<SUI_TEST_V2>(scenario_mut, bob);
         lib::printf(b"bob_sui_amount:");
@@ -1189,7 +1189,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::end(scenario);
     }
 
-    // Should update index correcly for effective with looping supply assets 
+    // Should update index correcly for effective with looping supply assets
     #[test]
     public fun test_update_index_9_decimals_looping_assets() {
         let scenario = test_scenario::begin(OWNER);
@@ -1206,12 +1206,12 @@ module lending_core::incentive_v3_test_target {
         // user B deposit 900 SUI
         // user A borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            alice, 
-            100_000000000, 
-            bob, 
-            900_000000000, 
+            scenario_mut,
+            0,
+            alice,
+            100_000000000,
+            bob,
+            900_000000000,
             &clock);
 
         // user A deposit 100 SUI
@@ -1270,7 +1270,7 @@ module lending_core::incentive_v3_test_target {
 
             // update index for 1 day
             clock::set_for_testing(&mut clock, 60 * 60 * 24 * 1000);
-            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage); 
+            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage);
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 1);
             lib::printf(b"1d index1:");
@@ -1325,7 +1325,7 @@ module lending_core::incentive_v3_test_target {
         // 50 * 3650*1e9 = 182,500,000,000,000
         assert!(alice_sui_amount == 0, 0);
 
-        // bob claim reward 
+        // bob claim reward
         incentive_v3_util::user_claim_reward<SUI_TEST_V2, SUI_TEST_V2>(scenario_mut, bob, 1, &clock);
         let bob_sui_amount = incentive_v3_util::get_coin_amount<SUI_TEST_V2>(scenario_mut, bob);
         lib::printf(b"bob_sui_amount:");
@@ -1337,7 +1337,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::end(scenario);
     }
 
-    // Should update index correcly for effective with looping borrow assets 
+    // Should update index correcly for effective with looping borrow assets
     #[test]
     public fun test_update_index_9_decimals_looping_borrow_assets() {
         let scenario = test_scenario::begin(OWNER);
@@ -1354,12 +1354,12 @@ module lending_core::incentive_v3_test_target {
         // user B deposit 950 SUI
         // user A borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            alice, 
-            100_000000000, 
-            bob, 
-            950_000000000, 
+            scenario_mut,
+            0,
+            alice,
+            100_000000000,
+            bob,
+            950_000000000,
             &clock);
 
         // user A deposit 50 SUI
@@ -1418,7 +1418,7 @@ module lending_core::incentive_v3_test_target {
 
             // update index for 1 day
             clock::set_for_testing(&mut clock, 60 * 60 * 24 * 1000);
-            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage); 
+            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage);
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 1);
             lib::printf(b"1d index1:");
@@ -1473,7 +1473,7 @@ module lending_core::incentive_v3_test_target {
         // 50 * 3650*1e9 = 182,500,000,000,000
         assert!(alice_sui_amount == 182500000000000 /2, 0);
 
-        // bob claim reward 
+        // bob claim reward
         incentive_v3_util::user_claim_reward<SUI_TEST_V2, SUI_TEST_V2>(scenario_mut, bob, 1, &clock);
         let bob_sui_amount = incentive_v3_util::get_coin_amount<SUI_TEST_V2>(scenario_mut, bob);
         lib::printf(b"bob_sui_amount:");
@@ -1503,23 +1503,23 @@ module lending_core::incentive_v3_test_target {
         // user B deposit 1000 SUI
         // user A borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            alice, 
-            100_000000000, 
-            bob, 
-            1000_000000000, 
+            scenario_mut,
+            0,
+            alice,
+            100_000000000,
+            bob,
+            1000_000000000,
             &clock);
 
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            @0xc, 
-            (1000000 - 1) * 100_000000000, 
-            @0xd, 
-            (1000000 - 1) *1000_000000000, 
+            scenario_mut,
+            0,
+            @0xc,
+            (1000000 - 1) * 100_000000000,
+            @0xd,
+            (1000000 - 1) *1000_000000000,
             &clock);
-            
+
         // update index
         test_scenario::next_tx(scenario_mut, alice);
         {
@@ -1573,7 +1573,7 @@ module lending_core::incentive_v3_test_target {
 
             // update index for 1 day
             clock::set_for_testing(&mut clock, 60 * 60 * 24 * 1000);
-            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage); 
+            incentive_v3::update_index_for_testing<SUI_TEST_V2>(&clock, &mut incentive, &mut storage);
 
             let (_, _, _, _, idx) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 1);
             lib::printf(b"1d index1:");
@@ -1628,7 +1628,7 @@ module lending_core::incentive_v3_test_target {
         // 50 * 3650*1e9 = 182,500,000,000,000
         assert!(alice_sui_amount == 182500000000000 / 1000000, 0);
 
-        // bob claim reward 
+        // bob claim reward
         incentive_v3_util::user_claim_reward<SUI_TEST_V2, SUI_TEST_V2>(scenario_mut, bob, 1, &clock);
         let bob_sui_amount = incentive_v3_util::get_coin_amount<SUI_TEST_V2>(scenario_mut, bob);
         lib::printf(b"bob_sui_amount:");
@@ -1745,7 +1745,7 @@ module lending_core::incentive_v3_test_target {
         clock::destroy_for_testing(clock);
         test_scenario::end(scenario);
     }
-    
+
     //-------------Getter/Setter-------------
     // Should get updated claimable reward and rule id for users
     // Should get latest claimable reward and rule id for users
@@ -1766,14 +1766,14 @@ module lending_core::incentive_v3_test_target {
         // user B deposit 1000 SUI
         // user A borrow 100 SUI
         incentive_v3_util::init_base_deposit_borrow_for_testing<SUI_TEST_V2>(
-            scenario_mut, 
-            0, 
-            alice, 
-            100_000000000, 
-            bob, 
-            1000_000000000, 
+            scenario_mut,
+            0,
+            alice,
+            100_000000000,
+            bob,
+            1000_000000000,
             &clock);
-        
+
         // no reward for alice at the beginning
         test_scenario::next_tx(scenario_mut, alice);
         {
@@ -1901,7 +1901,7 @@ module lending_core::incentive_v3_test_target {
         let alice_sui_amount = incentive_v3_util::get_coin_amount<SUI_TEST_V2>(scenario_mut, alice);
         lib::printf(b"alice_sui_amount:");
         lib::print(&alice_sui_amount);
-        
+
         incentive_v3_util::user_deposit<USDC_TEST_V2>(scenario_mut, alice, 1, 1000_000000, &clock);
         incentive_v3_util::user_deposit<COIN_TEST_V2>(scenario_mut, alice, 4, 1000_000000000000, &clock);
         incentive_v3_util::user_borrow<SUI_TEST_V2>(scenario_mut, bob, 0, 100_000000000, &clock);
@@ -1989,7 +1989,7 @@ module lending_core::incentive_v3_test_target {
             assert!(vector::borrow(&asset_tokens, 2) == &type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(vector::borrow(&asset_tokens, 1) == &type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(vector::borrow(&asset_tokens, 0) == &type_name::into_string(type_name::get<COIN_TEST_V2>()), 0);
-            
+
             lib::printf(b"reward_tokens:");
             assert!(vector::borrow(&reward_tokens, 2) == &type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
             assert!(vector::borrow(&reward_tokens, 2) == &type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
@@ -2027,7 +2027,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::next_tx(scenario_mut, alice);
         {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
-            let storage = test_scenario::take_shared<Storage>(scenario_mut);   
+            let storage = test_scenario::take_shared<Storage>(scenario_mut);
             let funds = test_scenario::take_shared<RewardFund<SUI_TEST_V2>>(scenario_mut);
 
             let rule_ids = vector::empty<address>();
@@ -2085,7 +2085,7 @@ module lending_core::incentive_v3_test_target {
             assert!(vector::borrow(&asset_tokens, 2) == &type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(vector::borrow(&asset_tokens, 1) == &type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(vector::borrow(&asset_tokens, 0) == &type_name::into_string(type_name::get<COIN_TEST_V2>()), 0);
-            
+
             lib::printf(b"reward_tokens:");
             assert!(vector::borrow(&reward_tokens, 2) == &type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
             assert!(vector::borrow(&reward_tokens, 2) == &type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
@@ -2118,7 +2118,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::end(scenario);
     }
 
-    
+
     // Should claim reward failed because pool not found
     #[test]
     #[expected_failure(abort_code = 2100, location = lending_core::incentive_v3)]
@@ -2273,7 +2273,7 @@ module lending_core::incentive_v3_test_target {
             vector::push_back(&mut rule_ids, addr);
 
             let (addr, _, _, _, _) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 3);
-            vector::push_back(&mut rule_ids, addr); 
+            vector::push_back(&mut rule_ids, addr);
 
             incentive_v3::claim_reward_entry<SUI_TEST_V2>(&clock, &mut incentive, &mut storage, &mut funds, vector::singleton(type_name::into_string(type_name::get<SUI_TEST_V2>())), rule_ids, test_scenario::ctx(scenario_mut));
 
@@ -2286,7 +2286,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::end(scenario);
     }
 
-    
+
     // Should set borrow fee  and get borrow fee correctly
     #[test]
     public fun test_borrow_fee() {
@@ -2304,7 +2304,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::next_tx(scenario_mut, OWNER);
         {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
-            
+
             let borrow_fee = incentive_v3::get_borrow_fee_for_testing(&incentive, 100000000000);
             assert!(borrow_fee == 0, 0);
 
@@ -2316,7 +2316,7 @@ module lending_core::incentive_v3_test_target {
         {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
             let admin_cap = test_scenario::take_from_sender<StorageAdminCap>(scenario_mut);
-                  
+
             manage::set_incentive_v3_borrow_fee_rate(&admin_cap, &mut incentive, 100, test_scenario::ctx(scenario_mut));   // 1%
             let borrow_fee = incentive_v3::get_borrow_fee_for_testing(&incentive, 100_000000000);
             assert!(borrow_fee == 1_000000000, 0);
@@ -2331,7 +2331,7 @@ module lending_core::incentive_v3_test_target {
             incentive_v3_util::user_deposit<SUI_TEST_V2>(scenario_mut, OWNER, 0, 1000_000000000, &clock);
             incentive_v3_util::user_borrow<SUI_TEST_V2>(scenario_mut, OWNER, 0, 50_000000000, &clock);
             incentive_v3_util::user_borrow<SUI_TEST_V2>(scenario_mut, OWNER, 0, 50_000000000, &clock);
-        };  
+        };
 
         // admin withdraw borrow fee
         test_scenario::next_tx(scenario_mut, OWNER);
@@ -2342,7 +2342,7 @@ module lending_core::incentive_v3_test_target {
             manage::withdraw_borrow_fee<SUI_TEST_V2>(&admin_cap, &mut incentive, 1_000000000, OWNER, test_scenario::ctx(scenario_mut));
             let owner_sui_amount = incentive_v3_util::get_coin_amount<SUI_TEST_V2>(scenario_mut, OWNER);
             assert!(owner_sui_amount == 1_000000000, 0);
-            
+
             test_scenario::return_shared(incentive);
             test_scenario::return_to_sender(scenario_mut, admin_cap);
         };
@@ -2369,7 +2369,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::next_tx(scenario_mut, OWNER);
         {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
-            
+
             let borrow_fee = incentive_v3::get_borrow_fee_for_testing(&incentive, 100000000000);
             assert!(borrow_fee == 0, 0);
 
@@ -2381,7 +2381,7 @@ module lending_core::incentive_v3_test_target {
         {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
             let admin_cap = test_scenario::take_from_sender<StorageAdminCap>(scenario_mut);
-                  
+
             manage::set_incentive_v3_borrow_fee_rate(&admin_cap, &mut incentive, 100, test_scenario::ctx(scenario_mut));   // 1%
             let borrow_fee = incentive_v3::get_borrow_fee_for_testing(&incentive, 100_000000000);
             assert!(borrow_fee == 1_000000000, 0);
@@ -2395,7 +2395,7 @@ module lending_core::incentive_v3_test_target {
         {
             incentive_v3_util::user_deposit<SUI_TEST_V2>(scenario_mut, OWNER, 0, 1000_000000000, &clock);
             incentive_v3_util::user_borrow<SUI_TEST_V2>(scenario_mut, OWNER, 0, 50_000000000, &clock);
-        };  
+        };
 
         // admin withdraw borrow fee
         test_scenario::next_tx(scenario_mut, OWNER);
@@ -2431,7 +2431,7 @@ module lending_core::incentive_v3_test_target {
         test_scenario::next_tx(scenario_mut, OWNER);
         {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
-            
+
             let borrow_fee = incentive_v3::get_borrow_fee_for_testing(&incentive, 100000000000);
             assert!(borrow_fee == 0, 0);
 
@@ -2443,7 +2443,7 @@ module lending_core::incentive_v3_test_target {
         {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
             let admin_cap = test_scenario::take_from_sender<StorageAdminCap>(scenario_mut);
-                  
+
             manage::set_incentive_v3_borrow_fee_rate(&admin_cap, &mut incentive, 10001, test_scenario::ctx(scenario_mut));   // 1%
             let borrow_fee = incentive_v3::get_borrow_fee_for_testing(&incentive, 100_000000000);
             assert!(borrow_fee == 1_000000000, 0);
@@ -2499,7 +2499,7 @@ module lending_core::incentive_v3_test_target {
     //         let sui_funds = test_scenario::take_shared<RewardFund<SUI_TEST_V2>>(scenario_mut);
     //         let (pool_addr, asset, _, rule_num) = incentive_v3::get_asset_pool_params_for_testing<SUI_TEST_V2>(&incentive);
     //         let (rule_addr, _, _, _, _) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 1);
-    
+
     //         let sui_type_str =  type_name::into_string(type_name::get<SUI_TEST_V2>());
     //         let version = incentive_v3::version(&incentive);
     //         assert!(version == 12, 0);
@@ -2579,7 +2579,7 @@ module lending_core::incentive_v3_test_target {
     //         test_scenario::return_shared(storage);
     //         test_scenario::return_shared(sui_funds);
     //     };
-    
+
     //     clock::destroy_for_testing(clock);
     //     test_scenario::end(scenario);
     // }

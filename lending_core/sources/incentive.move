@@ -14,8 +14,8 @@ module lending_core::incentive {
     use sui::tx_context::{Self, TxContext};
 
     use utils::utils;
-    use math::ray_math;
-    use math::safe_math;
+    use navi_math::ray_math;
+    use navi_math::safe_math;
     use lending_core::storage::{Self, Storage};
     use lending_core::error::{Self};
     use lending_core::account::{Self, AccountCap};
@@ -191,7 +191,7 @@ module lending_core::incentive {
         if (table::contains(&incentive.pools, asset)) {
             let current_timestamp = clock::timestamp_ms(clock);
             let (index_rewards, user_acc_rewards) = calc_pool_update_rewards(incentive, storage, current_timestamp, asset, account);
-            
+
             let pool_info = table::borrow_mut(&mut incentive.pools, asset);
             pool_info.last_update_time = current_timestamp;
 
@@ -257,7 +257,7 @@ module lending_core::incentive {
                 index_reward = index_reward + index_increase;
             };
             vector::push_back(&mut index_rewards, index_reward);
-            
+
             let user_acc_reward = 0;
             if (account != @0x0) {
                 let _user_acc_rewards = vector::borrow(&pool_info.user_acc_rewards, i);
@@ -350,7 +350,7 @@ module lending_core::incentive {
         let pool_info = table::borrow(&incentive.pools, asset);
         assert!(vector::length(&pool_info.coin_types) > pool_idx, error::invalid_pool());
         (
-            *vector::borrow(&pool_info.start_times, pool_idx), 
+            *vector::borrow(&pool_info.start_times, pool_idx),
             *vector::borrow(&pool_info.end_times, pool_idx),
             *vector::borrow(&pool_info.rates, pool_idx),
             *vector::borrow(&pool_info.oracle_ids, pool_idx)

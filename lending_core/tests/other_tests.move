@@ -4,9 +4,9 @@ module lending_core::d_test {
     use sui::coin::{Self};
     use sui::test_scenario::{Self};
 
-    use math::ray_math;
+    use navi_math::ray_math;
     use oracle::oracle::{PriceOracle};
-    use lending_core::calculator; 
+    use lending_core::calculator;
     use lending_core::base::{Self};
     use lending_core::pool::{Pool};
     use lending_core::logic::{Self};

@@ -1,6 +1,6 @@
 #[test_only]
-module math::ray_math_test {
-    use math::ray_math;
+module navi_math::ray_math_test {
+    use navi_math::ray_math;
 
     #[test]
     public fun ray_test() {

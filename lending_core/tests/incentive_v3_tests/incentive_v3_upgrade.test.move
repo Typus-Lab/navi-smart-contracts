@@ -8,7 +8,7 @@ module lending_core::incentive_v3_upgrade_test {
     use std::vector::{Self};
     use sui::transfer;
     use sui::balance::{Self, Balance};
-    use math::ray_math::{Self};
+    use navi_math::ray_math::{Self};
     use sui::vec_map::{Self, VecMap};
 
     use oracle::oracle::{Self, OracleAdminCap, PriceOracle};
@@ -39,7 +39,7 @@ module lending_core::incentive_v3_upgrade_test {
     const USER_A: address = @0x1;
     const USER_B: address = @0x2;
 
-    
+
     #[test_only]
     public fun user_deposit_v2<CoinType>(scenario: &mut Scenario, user: address, asset: u8, amount: u64, clock: &Clock) {
         test_scenario::next_tx(scenario, user);
@@ -54,7 +54,7 @@ module lending_core::incentive_v3_upgrade_test {
             test_scenario::return_shared(storage);
             test_scenario::return_shared(incentive_v1);
             test_scenario::return_shared(incentive_v2);
-        }; 
+        };
     }
 
     #[test_only]
@@ -70,7 +70,7 @@ module lending_core::incentive_v3_upgrade_test {
             test_scenario::return_shared(storage);
             test_scenario::return_shared(oracle);
             test_scenario::return_shared(incentive_v2);
-        }; 
+        };
     }
 
     #[test]
@@ -222,7 +222,7 @@ module lending_core::incentive_v3_upgrade_test {
             assert!(vector::length(&user_a_rewards) == 3, 0);
 
             let (asset_coin_types, reward_coin_types, user_claimable_rewards, user_claimed_rewards, rule_ids) = incentive_v3::parse_claimable_rewards(user_a_rewards);
-            
+
             assert!(vector::length(&asset_coin_types) == 3, 0);
             assert!(*vector::borrow(&asset_coin_types, 0) == type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(*vector::borrow(&asset_coin_types, 1) == type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
@@ -294,7 +294,7 @@ module lending_core::incentive_v3_upgrade_test {
             assert!(vector::length(&user_a_rewards) == 3, 0);
 
             let (asset_coin_types, reward_coin_types, user_claimable_rewards, user_claimed_rewards, rule_ids) = incentive_v3::parse_claimable_rewards(user_a_rewards);
-            
+
             assert!(vector::length(&asset_coin_types) == 3, 0);
             assert!(*vector::borrow(&asset_coin_types, 0) == type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(*vector::borrow(&asset_coin_types, 1) == type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);

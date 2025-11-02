@@ -14,8 +14,8 @@ module lending_core::incentive_v2 {
     use sui::tx_context::{Self, TxContext};
 
     use utils::utils;
-    use math::ray_math;
-    use math::safe_math;
+    use navi_math::ray_math;
+    use navi_math::safe_math;
     use oracle::oracle::{PriceOracle};
 
     use lending_core::lending;
@@ -116,7 +116,7 @@ module lending_core::incentive_v2 {
     public fun version_verification(incentive: &Incentive) {
         version::pre_check_version(incentive.version)
     }
-    
+
     public fun version_migrate(_: &OwnerCap, incentive: &mut Incentive) {
         assert!(incentive.version < version::this_version(), error::incorrect_version());
         incentive.version = version::this_version();
@@ -388,7 +388,7 @@ module lending_core::incentive_v2 {
             total_supply_balance = total_borrow_balance
         };
 
-        
+
         while(pool_length > 0) {
             let pool = table::borrow_mut(
                 &mut incentive.pools,
@@ -400,7 +400,7 @@ module lending_core::incentive_v2 {
 
             pool.index_reward = index_reward;
             pool.last_update_at = now;
-            
+
             if (table::contains(&pool.index_rewards_paids, user)) {
                 table::remove(&mut pool.index_rewards_paids, user);
             };
@@ -448,7 +448,7 @@ module lending_core::incentive_v2 {
         if (table::contains(&pool.index_rewards_paids, user)) {
             index_rewards_paid = *table::borrow(&pool.index_rewards_paids, user);
         };
-        
+
         let reward_increase = (index_reward - index_rewards_paid) * user_balance;
         total_rewards_of_user = total_rewards_of_user + reward_increase;
 
@@ -637,7 +637,7 @@ module lending_core::incentive_v2 {
     }
 
     // lending protocol entry function
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public entry fun entry_deposit<CoinType>(
         clock: &Clock,
         storage: &mut Storage,
@@ -653,7 +653,7 @@ module lending_core::incentive_v2 {
     }
 
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun deposit_with_account_cap<CoinType>(
         clock: &Clock,
         storage: &mut Storage,
@@ -667,7 +667,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public entry fun entry_deposit_on_behalf_of_user<CoinType>(
         clock: &Clock,
         storage: &mut Storage,
@@ -683,7 +683,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public entry fun entry_withdraw<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -698,7 +698,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun withdraw_with_account_cap<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -713,7 +713,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun withdraw<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -728,7 +728,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public entry fun entry_borrow<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -742,7 +742,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun borrow_with_account_cap<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -756,7 +756,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun borrow<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -770,7 +770,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public entry fun entry_repay<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -785,7 +785,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun repay_with_account_cap<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -799,7 +799,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun entry_repay_on_behalf_of_user<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -815,7 +815,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun repay<CoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -830,7 +830,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public entry fun entry_liquidation<DebtCoinType, CollateralCoinType>(
         clock: &Clock,
         oracle: &PriceOracle,
@@ -849,7 +849,7 @@ module lending_core::incentive_v2 {
         abort 0
     }
 
-    #[allow(unused_variable)] 
+    #[allow(unused_variable)]
     public fun liquidation<DebtCoinType, CollateralCoinType>(
         clock: &Clock,
         oracle: &PriceOracle,

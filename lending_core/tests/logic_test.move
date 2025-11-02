@@ -5,7 +5,7 @@ module lending_core::logic_test {
     use sui::clock;
     use sui::test_scenario::{Self};
 
-    use math::ray_math;
+    use navi_math::ray_math;
     use oracle::oracle::{PriceOracle};
     use lending_core::global;
     use lending_core::logic::{Self};
@@ -21,7 +21,7 @@ module lending_core::logic_test {
         {
             global::init_protocol(&mut scenario);
         };
-        
+
         test_scenario::next_tx(&mut scenario, OWNER);
         {
             let storage = test_scenario::take_shared<Storage>(&scenario);
@@ -32,7 +32,7 @@ module lending_core::logic_test {
             let (current_supply_index, current_borrow_index) = storage::get_index(&mut storage, 0);
             assert!(current_supply_index == ray_math::ray(), 0);
             assert!(current_borrow_index == ray_math::ray(), 0);
-            
+
             let (total_supply, total_borrow) = storage::get_total_supply(&mut storage, 0);
             assert!(total_supply == 100, 0);
             assert!(total_borrow == 0, 0);
@@ -59,7 +59,7 @@ module lending_core::logic_test {
         {
             global::init_protocol(&mut scenario);
         };
-        
+
         test_scenario::next_tx(&mut scenario, OWNER);
         {
             let stg = test_scenario::take_shared<Storage>(&scenario);
@@ -85,7 +85,7 @@ module lending_core::logic_test {
         {
             global::init_protocol(&mut scenario);
         };
-        
+
         test_scenario::next_tx(&mut scenario, OWNER);
         {
             let stg = test_scenario::take_shared<Storage>(&scenario);
@@ -296,7 +296,7 @@ module lending_core::logic_test {
     // // TODO
     // #[test]
     // public fun test_execute_liquidate() {
-        
+
 
         // let alice = @0xace;
         // let bob = @0xb0b;
@@ -333,7 +333,7 @@ module lending_core::logic_test {
         //         test_scenario::ctx(&mut owner_scenario),
         //     );
 
-        //     test_scenario::return_shared(price_oracle); 
+        //     test_scenario::return_shared(price_oracle);
         //     test_scenario::return_shared(oracle_cap);
         // };
 
@@ -358,7 +358,7 @@ module lending_core::logic_test {
         //     );
         //     std::debug::print(&max_liquidable_collateral);
         //     std::debug::print(&max_liquidable_debt);
-            
+
 
         //     execute_liquidate(&clock, &price_oracle, &mut stg, bob, 1, 0, 1);
         //     assert!(is_health(&price_oracle, &mut stg, bob), 0);

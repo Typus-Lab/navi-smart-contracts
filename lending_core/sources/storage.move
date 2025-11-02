@@ -12,7 +12,8 @@ module lending_core::storage {
     use sui::coin::{Self, CoinMetadata};
     use sui::tx_context::{Self, TxContext};
 
-    use math::ray_math;
+    use navi_math::ray_math;
+    use navi_math::safe_math;
     use lending_core::pool::{Self, Pool, PoolAdminCap};
     use lending_core::version::{Self};
     use lending_core::error::{Self};
@@ -95,13 +96,13 @@ module lending_core::storage {
     }
 
     struct LiquidationFactors has store {
-        ratio: u256, 
+        ratio: u256,
         bonus: u256,
         threshold: u256,
     }
 
     // Event
-    struct StorageConfiguratorSetting has copy, drop {  
+    struct StorageConfiguratorSetting has copy, drop {
         sender: address,
         configurator: address,
         value: bool,
@@ -121,7 +122,7 @@ module lending_core::storage {
         after: u256,
         index: u256,
     }
-    
+
     // Entry
     fun init(ctx: &mut TxContext) {
         transfer::public_transfer(StorageAdminCap {id: object::new(ctx)}, tx_context::sender(ctx));
@@ -188,7 +189,7 @@ module lending_core::storage {
 
         percentage_ray_validation(ltv);
         percentage_ray_validation(liquidation_threshold);
-        
+
         let reserve_data = ReserveData {
             id: storage.reserves_count,
             oracle_id: oracle_id,
@@ -325,7 +326,7 @@ module lending_core::storage {
     public fun set_liquidation_bonus(_: &OwnerCap, storage: &mut Storage, asset: u8, liquidation_bonus: u256) {
         version_verification(storage);
         percentage_ray_validation(liquidation_bonus);
-        
+
         let reserve = table::borrow_mut(&mut storage.reserves, asset);
         reserve.liquidation_factors.bonus = liquidation_bonus;
     }
@@ -346,14 +347,14 @@ module lending_core::storage {
         let name = type_name::into_string(type_name::get<CoinType>());
         let count = storage.reserves_count;
         let i = 0;
-        
+
         while (i < count) {
             let reserve = table::borrow(&storage.reserves, i);
             assert!(reserve.coin_type != name, error::duplicate_reserve());
             i = i + 1;
         }
     }
-    
+
     public fun pause(storage: &Storage): bool {
         storage.paused
     }
@@ -526,13 +527,13 @@ module lending_core::storage {
 
         let reserve = table::borrow_mut(&mut storage.reserves, asset);
         let borrow_balance = &mut reserve.borrow_balance;
-        
+
         increase_balance(borrow_balance, user, amount)
     }
 
     public(friend) fun decrease_borrow_balance(storage: &mut Storage, asset: u8, user: address, amount: u256) {
         version_verification(storage);
-        
+
         let reserve = table::borrow_mut(&mut storage.reserves, asset);
         let borrow_balance = &mut reserve.borrow_balance;
 
@@ -591,7 +592,7 @@ module lending_core::storage {
             }
         };
     }
-    
+
     public(friend) fun remove_user_loans(storage: &mut Storage, asset: u8, user: address) {
         let user_info = table::borrow_mut(&mut storage.user_info, user);
         let (exist, index) = vector::index_of(&user_info.loans, &asset);
@@ -647,7 +648,7 @@ module lending_core::storage {
 
         let scaled_treasury_value = reserve.treasury_balance;
         let treasury_value = ray_math::ray_mul(scaled_treasury_value, supply_index);
-        let withdrawable_value = math::safe_math::min((withdraw_amount as u256), treasury_value); // get the smallest one value, which is the amount that can be withdrawn
+        let withdrawable_value = safe_math::min((withdraw_amount as u256), treasury_value); // get the smallest one value, which is the amount that can be withdrawn
 
         {
             // decrease treasury balance

@@ -110,7 +110,7 @@ module lending_core::global {
                 USDC_INITIAL_PRICE,
                 USDC_DECIMALS,
             );
-            
+
             // register USDC token
             oracle::register_token_price(
                 &oracle_admin_cap,

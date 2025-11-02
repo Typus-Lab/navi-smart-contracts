@@ -1,7 +1,7 @@
 module lending_core::calculator {
     use sui::clock::{Clock};
 
-    use math::ray_math;
+    use navi_math::ray_math;
     use lending_core::error::{Self};
     use lending_core::constants::{Self};
     use oracle::oracle::{Self, PriceOracle};
@@ -45,7 +45,7 @@ module lending_core::calculator {
         )
         // borrow_rate * utilization * (ray_math::ray() - reserve_factor)
     }
-    
+
     /**
      * Title: Calculating compound interest
      * Input(current_timestamp): 1685029315718
@@ -72,7 +72,7 @@ module lending_core::calculator {
 
         // e.g. get the rate per second --> (6.3 * 1e27) / (60 * 60 * 24 * 365) --> 1.9977168949771689 * 1e20 = 199771689497716894977
         let rate_per_second = rate / constants::seconds_per_year();
-        
+
         let base_power_two = ray_math::ray_mul(rate_per_second, rate_per_second);
         let base_power_three = ray_math::ray_mul(base_power_two, rate_per_second);
 

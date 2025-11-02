@@ -3,8 +3,8 @@ module lending_core::logic {
     use sui::address;
     use sui::clock::{Self, Clock};
 
-    use math::ray_math;
-    use math::safe_math;
+    use navi_math::ray_math;
+    use navi_math::safe_math;
     use oracle::oracle::{PriceOracle};
     use lending_core::validation;
     use lending_core::calculator::{Self};
@@ -24,10 +24,10 @@ module lending_core::logic {
         new_borrow_index: u256,
     }
 
-    /** 
+    /**
      * Title: Execute deposit
      * Runner1: Update borrow_index, supply_index, last_timestamp, treasury
-     * Runner2: 
+     * Runner2:
      *   - Conversion of the actual balance of the amount deposited by the user according to the exchange rate
      *   - Increase the number of collateral for this asset for the user
      *   - Increase the total number of collateral in the pool
@@ -61,9 +61,9 @@ module lending_core::logic {
         emit_state_updated_event(storage, asset, user);
     }
 
-    /** 
+    /**
      * Title: Execute Withdraw
-     * 
+     *
      */
     public(friend) fun execute_withdraw<CoinType>(
         clock: &Clock,
@@ -99,7 +99,7 @@ module lending_core::logic {
 
         if (token_amount > actual_amount) {
             if (token_amount - actual_amount <= 1000) {
-                // Tiny balance cannot be raised in full, put it to treasury 
+                // Tiny balance cannot be raised in full, put it to treasury
                 storage::increase_treasury_balance(storage, asset, token_amount - actual_amount);
                 if (is_collateral(storage, asset, user)) {
                     storage::remove_user_collaterals(storage, asset, user);
@@ -116,7 +116,7 @@ module lending_core::logic {
     /**
      * Title: Execute Borrow
      * Runner1: Update borrow_index, supply_index, last_timestamp, treasury
-     * Runner2: 
+     * Runner2:
      *   - Conversion of the actual balance of the amount borrow by the user according to the exchange rate
      *   - Increase the number of loan for this asset for the user
      *   - Increase the total number of loan in the pool
@@ -136,7 +136,7 @@ module lending_core::logic {
         // Convert balances to actual balances using the latest exchange rates //
         /////////////////////////////////////////////////////////////////////////
         increase_borrow_balance(storage, asset, user, amount);
-        
+
         /////////////////////////////////////////////////////
         // Add the asset to the user's list of loan assets //
         /////////////////////////////////////////////////////
@@ -171,7 +171,7 @@ module lending_core::logic {
 
         // get the total debt of the user in this pool, borrow_balance * borrow_index --> 98 * 1e9
         let current_debt = user_loan_balance(storage, asset, user);
-        
+
         let excess_amount = 0;
         let repay_debt = amount; // 100 * 1e9
         if (current_debt < amount) { // 98 * 1e9 < 100 * 1e9?
@@ -377,7 +377,7 @@ module lending_core::logic {
      * Returns: RAY.
      */
     public fun user_health_factor(clock: &Clock, storage: &mut Storage, oracle: &PriceOracle, user: address): u256 {
-        // 
+        //
         let health_collateral_value = user_health_collateral_value(clock, oracle, storage, user); // 202500000000000
         let dynamic_liquidation_threshold = dynamic_liquidation_threshold(clock, storage, oracle, user); // 650000000000000000000000000
         let health_loan_value = user_health_loan_value(clock, oracle, storage, user); // 49500000000
@@ -508,7 +508,7 @@ module lending_core::logic {
         vector::contains(&collaterals, &asset)
     }
 
-    /** 
+    /**
      * Title: check if the user's loan list contains assets.
      * Returns: true/false.
      */
@@ -516,7 +516,7 @@ module lending_core::logic {
         let (_, loans) = storage::get_user_assets(storage, user);
         vector::contains(&loans, &asset)
     }
-    
+
     fun calculate_liquidation(
         clock: &Clock,
         storage: &mut Storage,
@@ -588,7 +588,7 @@ module lending_core::logic {
             liquidable_value > loan_value = false (2000 >= 2000 = false)
 
         */
-        if (repay_value >= liquidable_value) { 
+        if (repay_value >= liquidable_value) {
             excess_value = repay_value - liquidable_value;
         } else {
             excess_value = 0;
@@ -604,7 +604,7 @@ module lending_core::logic {
         /*
             Assumed:
                 liquidable_value = 3500u
-            
+
             bonus = 3500 * 5% = 175u
             treasury_reserved_collateral = 175 * 10% = 17.5u
 
@@ -680,20 +680,20 @@ module lending_core::logic {
         let (user_supply_balance, user_borrow_balance) = storage::get_user_balance(storage, asset, user);
         emit(StateUpdated {
             user: user,
-            asset: asset, 
-            user_supply_balance: user_supply_balance, 
-            user_borrow_balance: user_borrow_balance, 
-            new_supply_index: new_supply_index, 
+            asset: asset,
+            user_supply_balance: user_supply_balance,
+            user_borrow_balance: user_borrow_balance,
+            new_supply_index: new_supply_index,
             new_borrow_index: new_borrow_index
         });
     }
 
     #[test_only]
     public fun execute_deposit_for_testing<CoinType>(
-        clock: &Clock, 
-        storage: &mut Storage, 
-        asset: u8, 
-        user: address, 
+        clock: &Clock,
+        storage: &mut Storage,
+        asset: u8,
+        user: address,
         amount: u256
     ) {
         execute_deposit<CoinType>(clock, storage, asset, user, amount)
@@ -701,11 +701,11 @@ module lending_core::logic {
 
     #[test_only]
     public fun execute_borrow_for_testing<CoinType>(
-        clock: &Clock, 
-        oracle: &PriceOracle, 
-        storage: &mut Storage, 
-        asset: u8, 
-        user: address, 
+        clock: &Clock,
+        oracle: &PriceOracle,
+        storage: &mut Storage,
+        asset: u8,
+        user: address,
         amount: u256
     ) {
         execute_borrow<CoinType>(clock, oracle, storage, asset, user, amount)
@@ -725,11 +725,11 @@ module lending_core::logic {
 
     #[test_only]
     public fun execute_repay_for_testing<CoinType>(
-        clock: &Clock, 
-        _oracle: &PriceOracle, 
-        storage: &mut Storage, 
-        asset: u8, 
-        user: address, 
+        clock: &Clock,
+        _oracle: &PriceOracle,
+        storage: &mut Storage,
+        asset: u8,
+        user: address,
         amount: u256
     ): u256 {
         execute_repay<CoinType>(clock, _oracle, storage, asset, user, amount)

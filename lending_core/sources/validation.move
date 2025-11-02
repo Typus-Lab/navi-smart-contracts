@@ -1,14 +1,14 @@
 module lending_core::validation {
     use std::type_name;
-    use math::ray_math::{Self};
+    use navi_math::ray_math::{Self};
     use lending_core::storage::{Self, Storage};
     use lending_core::error::{Self};
 
-    /** 
+    /**
      * Title: Validates a deposit action
      * storage: -
      * asset: -
-     * amount: 
+     * amount:
      *   - The decimals of ETH is 9
      *   - Total collateral is 1.2ETH --> amount = 1.2 * 1e9 = 1200000000
      */
@@ -45,11 +45,11 @@ module lending_core::validation {
         assert!(scale_supply_balance >= scale_borrow_balance + amount, error::insufficient_balance())
     }
 
-    /** 
+    /**
      * Title: Validates borrow action
      * storage: -
      * asset: -
-     * amount: 
+     * amount:
      *   - The decimals of ETH is 9
      *   - borrow amount is 1.2ETH --> amount = 1.2 * 1e9 = 1200000000
      */

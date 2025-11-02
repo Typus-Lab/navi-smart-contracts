@@ -10,7 +10,7 @@ module lending_core::flash_loan {
     use sui::balance::{Self, Balance};
     use sui::tx_context::{Self, TxContext};
 
-    use math::ray_math;
+    use navi_math::ray_math;
     use lending_core::error::{Self};
     use lending_core::logic::{Self};
     use lending_core::version::{Self};
@@ -153,7 +153,7 @@ module lending_core::flash_loan {
         let to_treasury = _loan_amount * cfg.rate_to_treasury / constants::FlashLoanMultiple();
 
         let _balance = pool::withdraw_balance(_pool, _loan_amount, _user);
-        
+
         let _receipt = Receipt<CoinType> {
             user: _user,
             asset: *asset_id,
@@ -254,37 +254,37 @@ module lending_core::flash_loan {
 
     public(friend) fun set_asset_rate_to_supplier(config: &mut Config, _coin_type: String, _value: u64) {
         version_verification(config);
-        let cfg = get_asset_config_by_coin_type(config, _coin_type); 
-        cfg.rate_to_supplier = _value;  
+        let cfg = get_asset_config_by_coin_type(config, _coin_type);
+        cfg.rate_to_supplier = _value;
         verify_config(cfg);
     }
 
     public(friend) fun set_asset_rate_to_treasury(config: &mut Config, _coin_type: String, _value: u64) {
         version_verification(config);
-        let cfg = get_asset_config_by_coin_type(config, _coin_type); 
-        cfg.rate_to_treasury = _value;  
+        let cfg = get_asset_config_by_coin_type(config, _coin_type);
+        cfg.rate_to_treasury = _value;
         verify_config(cfg);
     }
 
     public(friend) fun set_asset_min(config: &mut Config, _coin_type: String, _value: u64) {
         version_verification(config);
-        let cfg = get_asset_config_by_coin_type(config, _coin_type); 
-        cfg.min = _value;  
+        let cfg = get_asset_config_by_coin_type(config, _coin_type);
+        cfg.min = _value;
         verify_config(cfg);
     }
 
     public(friend) fun set_asset_max(config: &mut Config, _coin_type: String, _value: u64) {
         version_verification(config);
-        let cfg = get_asset_config_by_coin_type(config, _coin_type); 
-        cfg.max = _value;  
+        let cfg = get_asset_config_by_coin_type(config, _coin_type);
+        cfg.max = _value;
         verify_config(cfg);
     }
 
     fun get_asset_config_by_coin_type(config: &mut Config, _coin_type: String): &mut AssetConfig{
         assert!(table::contains(&config.support_assets, *ascii::as_bytes(&_coin_type)), error::reserve_not_found());
         let asset_id = table::borrow(&config.support_assets, *ascii::as_bytes(&_coin_type));
-        let cfg = table::borrow_mut(&mut config.assets, *asset_id);  
-        cfg  
+        let cfg = table::borrow_mut(&mut config.assets, *asset_id);
+        cfg
     }
 
     fun verify_config(cfg: &AssetConfig) {

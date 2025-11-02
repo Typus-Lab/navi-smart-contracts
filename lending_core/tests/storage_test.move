@@ -7,7 +7,7 @@ module lending_core::storage_test {
     use sui::coin::{CoinMetadata};
     use sui::test_scenario::{Self};
 
-    use math::ray_math;
+    use navi_math::ray_math;
     use lending_core::global;
     use lending_core::pool::{PoolAdminCap};
     use lending_core::btc_test::{BTC_TEST};
@@ -29,7 +29,7 @@ module lending_core::storage_test {
 
             let (_, reserves_count) = storage::get_storage_info_for_testing(&stg);
             assert!(reserves_count == 5, 0);
-            
+
             let (is_isolated) = storage::get_reserve_info_for_testing(&stg, 0);
             assert!(is_isolated == false, 0);
 
@@ -81,7 +81,7 @@ module lending_core::storage_test {
         test_scenario::next_tx(&mut scenario, OWNER);
         {
             let stg = test_scenario::take_shared<Storage>(&scenario);
-            
+
             storage::increase_supply_balance_for_testing(&mut stg, 0, OWNER, 100_000000000);
 
             test_scenario::return_shared(stg);
@@ -259,7 +259,7 @@ module lending_core::storage_test {
         {
             let asset_id = (0 as u8);
             let stg = test_scenario::take_shared<Storage>(&scenario);
-            
+
             assert!(storage::pause(&stg) == false, 0);
             assert!(storage::get_supply_cap_ceiling(&mut stg, asset_id) == 20000000_000000000_000000000000000000000000000, 0);
             assert!(storage::get_borrow_cap_ceiling_ratio(&mut stg, asset_id) == 900000000000000000000000000, 0);
@@ -464,7 +464,7 @@ module lending_core::storage_test {
             assert!(current_supply_index_before == ray_math::ray(), 0);
             assert!(current_borrow_index_before == ray_math::ray(), 0);
             assert!(storage::get_treasury_balance(&stg, 0) == 0, 0);
-            
+
             storage::update_state_for_testing(&mut stg, 0, 1, 1, 1, 1);
 
             let (current_supply_index_after, current_borrow_index_after) = storage::get_index(&mut stg, 0);

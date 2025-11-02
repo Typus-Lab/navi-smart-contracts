@@ -3,7 +3,7 @@ module lending_core::dynamic_calculator {
     use sui::address;
     use sui::clock::{Self, Clock};
 
-    use math::ray_math;
+    use navi_math::ray_math;
     use oracle::oracle::{PriceOracle};
     use lending_core::calculator;
     use lending_core::pool::{Self, Pool};
@@ -17,8 +17,8 @@ module lending_core::dynamic_calculator {
         pool: &mut Pool<CoinType>,
         user: address,
         asset: u8,
-        estimate_supply_value: u64, 
-        estimate_borrow_value: u64, 
+        estimate_supply_value: u64,
+        estimate_borrow_value: u64,
         is_increase: bool
     ): u256 {
         assert!(!(estimate_supply_value > 0 && estimate_borrow_value > 0), error::non_single_value());
@@ -33,9 +33,9 @@ module lending_core::dynamic_calculator {
         };
 
         let dynamic_health_collateral_value = dynamic_user_health_collateral_value(
-            clock, 
-            oracle, 
-            storage, 
+            clock,
+            oracle,
+            storage,
             user,
             asset,
             (normal_estimate_supply_value as u256),
@@ -53,14 +53,14 @@ module lending_core::dynamic_calculator {
         );
 
         let dynamic_liquidation_threshold = dynamic_liquidation_threshold(
-            clock, 
-            storage, 
-            oracle, 
+            clock,
+            storage,
+            oracle,
             user,
             asset,
             (normal_estimate_supply_value as u256),
             is_increase
-            ); 
+            );
 
         if (dynamic_health_loan_value > 0) {
             // H = TotalCollateral * LTV * Threshold / TotalBorrow
@@ -74,10 +74,10 @@ module lending_core::dynamic_calculator {
     public fun dynamic_user_health_collateral_value(
         clock: &Clock,
         oracle: &PriceOracle,
-        storage: &mut Storage, 
+        storage: &mut Storage,
         user: address,
-        asset: u8, 
-        estimate_value: u256, 
+        asset: u8,
+        estimate_value: u256,
         is_increase: bool
     ): u256 {
         let (collaterals, _) = storage::get_user_assets(storage, user);
@@ -115,9 +115,9 @@ module lending_core::dynamic_calculator {
         clock: &Clock,
         oracle: &PriceOracle,
         storage: &mut Storage,
-        user: address, 
-        asset: u8, 
-        estimate_value: u256, 
+        user: address,
+        asset: u8,
+        estimate_value: u256,
         is_increase: bool
     ): u256 {
         let (_, loans) = storage::get_user_assets(storage, user);
@@ -150,12 +150,12 @@ module lending_core::dynamic_calculator {
     }
 
     public fun dynamic_user_collateral_value(
-        clock: &Clock, 
-        oracle: &PriceOracle, 
-        storage: &mut Storage, 
-        asset: u8, 
+        clock: &Clock,
+        oracle: &PriceOracle,
+        storage: &mut Storage,
+        asset: u8,
         user: address,
-        estimate_value: u256, 
+        estimate_value: u256,
         is_increase: bool
     ): u256 {
         let balance = dynamic_user_collateral_balance(clock, storage, asset, user, estimate_value, is_increase);
@@ -165,12 +165,12 @@ module lending_core::dynamic_calculator {
     }
 
     public fun dynamic_user_loan_value(
-        clock: &Clock, 
-        oracle: &PriceOracle, 
-        storage: &mut Storage, 
-        asset: u8, 
+        clock: &Clock,
+        oracle: &PriceOracle,
+        storage: &mut Storage,
+        asset: u8,
         user: address,
-        estimate_value: u256, 
+        estimate_value: u256,
         is_increase: bool
     ): u256 {
         let balance = dynamic_user_loan_balance(clock, storage, asset, user, estimate_value, is_increase);
@@ -184,7 +184,7 @@ module lending_core::dynamic_calculator {
         storage: &mut Storage,
         asset: u8,
         user: address,
-        estimate_value: u256, 
+        estimate_value: u256,
         is_increase: bool
     ): u256 {
         let (supply_balance, _) = storage::get_user_balance(storage, asset, user);
@@ -195,16 +195,16 @@ module lending_core::dynamic_calculator {
             supply_balance = supply_balance - estimate_value;
         };
 
-        let (current_supply_index, _) = calculate_current_index(clock, storage, asset); 
+        let (current_supply_index, _) = calculate_current_index(clock, storage, asset);
         ray_math::ray_mul(supply_balance, current_supply_index) // scaled_amount
     }
 
     public fun dynamic_user_loan_balance(
-        clock: &Clock, 
-        storage: &mut Storage, 
-        asset: u8, 
-        user: address, 
-        estimate_value: u256, 
+        clock: &Clock,
+        storage: &mut Storage,
+        asset: u8,
+        user: address,
+        estimate_value: u256,
         is_increase: bool
     ): u256 {
         let (_, borrow_balance) = storage::get_user_balance(storage, asset, user);
@@ -215,17 +215,17 @@ module lending_core::dynamic_calculator {
             borrow_balance = borrow_balance - estimate_value;
         };
 
-        let (_, current_borrow_index) = calculate_current_index(clock, storage, asset); 
+        let (_, current_borrow_index) = calculate_current_index(clock, storage, asset);
         ray_math::ray_mul(borrow_balance, current_borrow_index) // scaled_amount
     }
 
     public fun dynamic_liquidation_threshold(
-        clock: &Clock, 
-        storage: &mut Storage, 
-        oracle: &PriceOracle, 
+        clock: &Clock,
+        storage: &mut Storage,
+        oracle: &PriceOracle,
         user: address,
-        asset: u8, 
-        estimate_value: u256, 
+        asset: u8,
+        estimate_value: u256,
         is_increase: bool
     ): u256 {
         // Power by Erin
@@ -288,12 +288,12 @@ module lending_core::dynamic_calculator {
     }
 
     public fun dynamic_calculate_apy<CoinType>(
-        clock: &Clock, 
-        storage: &mut Storage, 
-        pool: &mut Pool<CoinType>, 
-        asset: u8, 
-        estimate_supply_value: u64, 
-        estimate_borrow_value: u64, 
+        clock: &Clock,
+        storage: &mut Storage,
+        pool: &mut Pool<CoinType>,
+        asset: u8,
+        estimate_supply_value: u64,
+        estimate_borrow_value: u64,
         is_increase: bool
     ): (u256, u256){
         assert!(!(estimate_supply_value > 0 && estimate_borrow_value > 0), error::non_single_value());
@@ -313,21 +313,21 @@ module lending_core::dynamic_calculator {
         };
 
         let borrow_rate = dynamic_calculate_borrow_rate(
-            clock, 
-            storage, 
-            asset, 
-            (normal_estimate_supply_value as u256), 
-            (normal_estimate_borrow_value as u256), 
+            clock,
+            storage,
+            asset,
+            (normal_estimate_supply_value as u256),
+            (normal_estimate_borrow_value as u256),
             is_increase
         );
 
         let supply_rate = dynamic_calculate_supply_rate(
-            clock, 
-            storage, 
-            asset, 
-            borrow_rate, 
-            (normal_estimate_supply_value as u256), 
-            (normal_estimate_borrow_value as u256), 
+            clock,
+            storage,
+            asset,
+            borrow_rate,
+            (normal_estimate_supply_value as u256),
+            (normal_estimate_borrow_value as u256),
             is_increase
         );
 
@@ -336,10 +336,10 @@ module lending_core::dynamic_calculator {
 
     public fun dynamic_calculate_borrow_rate(
         clock: &Clock,
-        storage: &mut Storage, 
-        asset: u8, 
-        estimate_supply_value: u256, 
-        estimate_borrow_value: u256, 
+        storage: &mut Storage,
+        asset: u8,
+        estimate_supply_value: u256,
+        estimate_borrow_value: u256,
         is_increase: bool
     ): u256 {
         let (base_rate, multiplier, jump_rate_multiplier, _, optimal_utilization) = storage::get_borrow_rate_factors(storage, asset);
@@ -352,14 +352,14 @@ module lending_core::dynamic_calculator {
             base_rate + ray_math::ray_mul(utilization, multiplier) + ray_math::ray_mul((utilization - optimal_utilization), jump_rate_multiplier)
         }
     }
-    
+
     public fun dynamic_calculate_supply_rate(
-        clock: &Clock, 
-        storage: &mut Storage, 
-        asset: u8, 
-        borrow_rate: u256, 
-        estimate_supply_value: u256, 
-        estimate_borrow_value: u256, 
+        clock: &Clock,
+        storage: &mut Storage,
+        asset: u8,
+        borrow_rate: u256,
+        estimate_supply_value: u256,
+        estimate_borrow_value: u256,
         is_increase: bool
     ): u256 {
         let (_, _, _, reserve_factor, _) = storage::get_borrow_rate_factors(storage, asset);
@@ -372,11 +372,11 @@ module lending_core::dynamic_calculator {
     }
 
     public fun dynamic_caculate_utilization(
-        clock: &Clock, 
-        storage: &mut Storage, 
-        asset: u8, 
-        estimate_supply_value: u256, 
-        estimate_borrow_value: u256, 
+        clock: &Clock,
+        storage: &mut Storage,
+        asset: u8,
+        estimate_supply_value: u256,
+        estimate_borrow_value: u256,
         is_increase: bool
     ): u256 {
         let (total_supply, total_borrows) = storage::get_total_supply(storage, asset);

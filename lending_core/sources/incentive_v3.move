@@ -17,7 +17,7 @@ module lending_core::incentive_v3 {
     use sui::vec_map::{Self, VecMap};
     use sui::tx_context::{Self, TxContext};
 
-    use math::ray_math::{Self};
+    use navi_math::ray_math::{Self};
     use lending_core::error::{Self};
     use lending_core::pool::{Pool};
     use lending_core::version::{Self};
@@ -370,7 +370,7 @@ module lending_core::incentive_v3 {
 
     public(friend) fun set_max_reward_rate_by_rule_id<T>(incentive: &mut Incentive, rule_id: address, max_total_supply: u64, duration_ms: u64) {
         version_verification(incentive); // version check
-        
+
         let rule = get_mut_rule<T>(incentive, rule_id);
         let max_rate = ray_math::ray_div((max_total_supply as u256), (duration_ms as u256));
         rule.max_rate = max_rate;
@@ -567,7 +567,7 @@ module lending_core::incentive_v3 {
 
         // update the last update time and global index
         rule.last_update_at = clock::timestamp_ms(clock);
-        rule.global_index = new_global_index;    
+        rule.global_index = new_global_index;
     }
 
     fun calculate_global_index(clock: &Clock, rule: &Rule, total_supply: u256, total_borrow: u256): u256 {
@@ -578,7 +578,7 @@ module lending_core::incentive_v3 {
         } else {
             abort 0
         };
-        
+
         let now = clock::timestamp_ms(clock);
         let duration = now - rule.last_update_at;
         let index_increased = if (duration == 0 || total_balance == 0) {
@@ -628,7 +628,7 @@ module lending_core::incentive_v3 {
     // option: u8,
     // enable: bool,
     // reward_coin_type: String,
-    // rate: u256, 
+    // rate: u256,
     // last_update_at: u64,
     // global_index: u256,
     // user_index: Table<address, u256>,
@@ -636,16 +636,16 @@ module lending_core::incentive_v3 {
     // user_rewards_claimed: Table<address, u256>,
     public fun get_rule_info(rule: &Rule): (address, u8, bool, String, u256, u64, u256, &Table<address, u256>, &Table<address, u256>, &Table<address, u256>) {
         (
-            object::uid_to_address(&rule.id), 
-            rule.option, 
-            rule.enable, 
-            rule.reward_coin_type, 
-            rule.rate, 
-            rule.last_update_at, 
-            rule.global_index, 
-            &rule.user_index, 
-            &rule.user_total_rewards, 
-            &rule.user_rewards_claimed, 
+            object::uid_to_address(&rule.id),
+            rule.option,
+            rule.enable,
+            rule.reward_coin_type,
+            rule.rate,
+            rule.last_update_at,
+            rule.global_index,
+            &rule.user_index,
+            &rule.user_total_rewards,
+            &rule.user_rewards_claimed,
         )
     }
 
@@ -705,7 +705,7 @@ module lending_core::incentive_v3 {
 
                 let key = ascii::string(ascii::into_bytes(pool_key));
                 ascii::append(&mut key, ascii::string(b","));
-                ascii::append(&mut key, rule.reward_coin_type); 
+                ascii::append(&mut key, rule.reward_coin_type);
 
                 if (!vec_map::contains(&data, &key)) {
                     vec_map::insert(&mut data, key, ClaimableReward{
@@ -1155,7 +1155,7 @@ module lending_core::incentive_v3 {
         (
             object::uid_to_address(&pool.id),
             pool.asset,
-            pool.asset_coin_type, 
+            pool.asset_coin_type,
             vec_map::size(&pool.rules)
         )
     }
@@ -1183,7 +1183,7 @@ module lending_core::incentive_v3 {
                 return (
                     object::uid_to_address(&rule.id),
                     rule.enable,
-                    rule.rate, 
+                    rule.rate,
                     rule.last_update_at,
                     rule.global_index
                 )
@@ -1212,7 +1212,7 @@ module lending_core::incentive_v3 {
     public fun delete_rule_for_testing<CoinType>(incentive: &mut Incentive, rule_id: address) {
         let coin_type = type_name::into_string(type_name::get<CoinType>());
         let pool = vec_map::get_mut(&mut incentive.pools, &coin_type);
-        let (_addr, Rule { 
+        let (_addr, Rule {
             id,
             option,
             enable,
@@ -1230,7 +1230,7 @@ module lending_core::incentive_v3 {
         table::drop(user_total_rewards);
         table::drop(user_rewards_claimed);
     }
-    
+
     #[test_only]
     public fun init_for_testing(ctx: &mut TxContext) {
         create_incentive_v3(ctx)

@@ -8,6 +8,7 @@ module lending_core::manage_test {
     use sui::test_scenario::{Self, Scenario};
     use sui::object::{ID};
 
+    use navi_math::ray_math;
     use lending_core::lib;
     use lending_core::logic;
     use lending_core::base;
@@ -41,7 +42,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        };  
+        };
 
         test_scenario::next_tx(&mut scenario, OWNER);
         {
@@ -80,7 +81,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        };  
+        };
 
         test_scenario::next_tx(&mut scenario, OWNER);
         {
@@ -105,7 +106,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        };  
+        };
 
         test_scenario::next_tx(&mut scenario, OWNER);
         {
@@ -130,7 +131,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        };  
+        };
 
         test_scenario::next_tx(&mut scenario, OWNER);
         {
@@ -163,13 +164,13 @@ module lending_core::manage_test {
 
     #[test]
     #[expected_failure(abort_code = 1503, location = lending_core::flash_loan)]
-    public fun test_set_min_and_set_max() 
+    public fun test_set_min_and_set_max()
     {
         let scenario = test_scenario::begin(OWNER);
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        };  
+        };
         // Should set min max for different assets
         test_scenario::next_tx(&mut scenario, OWNER);
         {
@@ -182,7 +183,7 @@ module lending_core::manage_test {
             manage::set_flash_loan_asset_min<USDC_TEST>(&storage_admin_cap, &mut config, 2000000);
             manage::set_flash_loan_asset_max<USDC_TEST>(&storage_admin_cap, &mut config, 2000_000000);
 
-        
+
             test_scenario::return_shared(config);
             test_scenario::return_to_sender(&scenario, storage_admin_cap);
         };
@@ -236,7 +237,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        };  
+        };
 
         test_scenario::next_tx(&mut scenario, OWNER);
         {
@@ -260,7 +261,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        };  
+        };
 
         test_scenario::next_tx(&mut scenario, OWNER);
         {
@@ -279,13 +280,13 @@ module lending_core::manage_test {
     // should flash loan fail if amount do not between min and max
     #[test]
     #[expected_failure(abort_code = 1503, location = lending_core::flash_loan)]
-    public fun test_flash_loan_fail_if_amount_greater_than_max() 
+    public fun test_flash_loan_fail_if_amount_greater_than_max()
     {
         let scenario = test_scenario::begin(OWNER);
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        };  
+        };
 
         test_scenario::next_tx(&mut scenario, OWNER);
         {
@@ -295,7 +296,7 @@ module lending_core::manage_test {
             manage::set_flash_loan_asset_min<USDC_TEST>(&storage_admin_cap, &mut config, 2000000);
             manage::set_flash_loan_asset_max<USDC_TEST>(&storage_admin_cap, &mut config, 2000_000000);
 
-        
+
             test_scenario::return_shared(config);
             test_scenario::return_to_sender(&scenario, storage_admin_cap);
         };
@@ -332,7 +333,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        }; 
+        };
 
         // deposit 1m Sui
         test_scenario::next_tx(&mut scenario, OWNER);
@@ -355,7 +356,7 @@ module lending_core::manage_test {
             let (loan_balance, receipt) = lending::flash_loan_with_ctx<SUI_TEST>(&flash_loan_config, &mut sui_pool, loan_amount, test_scenario::ctx(&mut scenario));
 
             let (user, _, amount, pool, fee_to_supplier, fee_to_treasury) = flash_loan::parsed_receipt<SUI_TEST>(&receipt);
- 
+
             assert!(fee_to_supplier == 4_800000000, 0);
             assert!(fee_to_treasury == 1_200000000, 0);
 
@@ -399,7 +400,7 @@ module lending_core::manage_test {
             let loan_amount = 3000_000000000;
             let (loan_balance, receipt) = lending::flash_loan_with_ctx<SUI_TEST>(&flash_loan_config, &mut sui_pool, loan_amount, test_scenario::ctx(&mut scenario));
 
-            // check fee 
+            // check fee
             let (user, _, amount, pool, fee_to_supplier, fee_to_treasury) = flash_loan::parsed_receipt<SUI_TEST>(&receipt);
             let expect_supply_fee = 2999_700000000;
             assert!(fee_to_supplier == expect_supply_fee, 0);
@@ -425,11 +426,11 @@ module lending_core::manage_test {
             let d = std::string::utf8(b"test_flash_loan_should_correctly_with_larger_rate");
             std::debug::print(&d);
             let (total_supply, _) = storage::get_total_supply(&mut storage, SUI_ASSET_ID);
-            let actual_amount = math::ray_math::ray_div((expect_supply_fee as u256), _before_supply_index);// 2999700000000 / 1000004800000000000000000000 = 2999685601509
+            let actual_amount = ray_math::ray_div((expect_supply_fee as u256), _before_supply_index);// 2999700000000 / 1000004800000000000000000000 = 2999685601509
             print(&actual_amount);
             print(&total_supply);//1e15
             print(&_before_supply_index);// 1000004800000000000000000000
-            let expect_supply_index_diff = math::ray_math::ray_mul(math::ray_math::ray_div(actual_amount, total_supply), _before_supply_index);//2999.7 * 1e21
+            let expect_supply_index_diff = ray_math::ray_mul(ray_math::ray_div(actual_amount, total_supply), _before_supply_index);//2999.7 * 1e21
             print(&expect_supply_index_diff);// 2999699999999887243200000
 
             assert!(expect_supply_index_diff == actual_supply_index_diff, 0);
@@ -457,7 +458,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        }; 
+        };
 
         // deposit 1m Sui
         test_scenario::next_tx(&mut scenario, OWNER);
@@ -525,7 +526,7 @@ module lending_core::manage_test {
             let loan_amount = 1000000000000;
             let (loan_balance, receipt) = lending::flash_loan_with_ctx<SUI_TEST>(&flash_loan_config, &mut sui_pool, loan_amount, test_scenario::ctx(&mut scenario));
 
-            // check fee 
+            // check fee
             let expect_treasury_fee = 999_900000000;
             let (user, _, amount, pool, fee_to_supplier, fee_to_treasury) = flash_loan::parsed_receipt<SUI_TEST>(&receipt);
             assert!(fee_to_supplier == 0, 0);
@@ -560,7 +561,7 @@ module lending_core::manage_test {
     }
 
     /*
-        1.flash loan for more than 2 assets, check fee 
+        1.flash loan for more than 2 assets, check fee
         2.set supplier rate、treasury rate for one asset
         3.flash loan for all assets, check fee, check index
     */
@@ -570,7 +571,7 @@ module lending_core::manage_test {
         let _clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
         {
             base::initial_protocol(&mut scenario, &_clock);
-        }; 
+        };
 
         //create USDT_TEST flash loan asset
         test_scenario::next_tx(&mut scenario, OWNER);
@@ -635,7 +636,7 @@ module lending_core::manage_test {
 
             fee_to_supplier_on_first_flash_loan_sui = fee_to_supplier;
             fee_to_treasury_on_first_flash_loan_sui = fee_to_treasury;
-            
+
             assert!(fee_to_supplier_on_first_flash_loan_sui == 320000000, 0);
             assert!(fee_to_treasury_on_first_flash_loan_sui == 80000000, 0);
 
@@ -820,7 +821,7 @@ module lending_core::manage_test {
             let (supply_index, borrow_index) = storage::get_index(&mut storage, USDC_ASSET_ID);
             let supply_diff_on_sencond_flash_loan_usdc = supply_index - _before_supply_index;
 
-            // check index 
+            // check index
             assert!(_before_borrow_index == borrow_index, 0);
             assert!(_before_supply_index < supply_index, 0);
             lib::close_to(supply_diff_on_sencond_flash_loan_usdc, supply_diff_on_first_flash_loan_usdc, 600000000000);
@@ -831,7 +832,7 @@ module lending_core::manage_test {
             test_scenario::return_shared(flash_loan_config);
         };
 
-        //Sencond flash loan: 30 USDT, The rate has been modified.  
+        //Sencond flash loan: 30 USDT, The rate has been modified.
         test_scenario::next_tx(&mut scenario, OWNER);
         {
             let storage = test_scenario::take_shared<Storage>(&scenario);
@@ -848,9 +849,9 @@ module lending_core::manage_test {
             let (user, _, amount, _, fee_to_supplier, fee_to_treasury) = flash_loan::parsed_receipt<USDT_TEST>(&receipt);
 
             // check fee
-            assert!(fee_to_supplier_on_first_flash_loan_usdt < fee_to_supplier, 0); 
-            assert!(fee_to_treasury_on_first_flash_loan_usdt > fee_to_treasury, 0); 
-            assert!(fee_to_supplier == 900000, 0);// rate 300 
+            assert!(fee_to_supplier_on_first_flash_loan_usdt < fee_to_supplier, 0);
+            assert!(fee_to_treasury_on_first_flash_loan_usdt > fee_to_treasury, 0);
+            assert!(fee_to_supplier == 900000, 0);// rate 300
             assert!(fee_to_treasury == 3000, 0);// rate 1
 
             let coin = coin::mint_for_testing<USDT_TEST>(fee_to_supplier + fee_to_treasury , test_scenario::ctx(&mut scenario));
@@ -873,12 +874,12 @@ module lending_core::manage_test {
             std::debug::print(&d);
             print(&supply_index); // 1000009449999999998177500000
             let (total_supply, _) = storage::get_total_supply(&mut storage, USDT_ASSET_ID);
-            let actual_amount = math::ray_math::ray_div((900000000 as u256), _before_supply_index);
+            let actual_amount = ray_math::ray_div((900000000 as u256), _before_supply_index);
             print(&actual_amount); // 899999595
             print(&total_supply); // 1e14
             print(&_before_supply_index); // 1000000450000000000000000000
             print(&supply_diff_on_first_flash_loan_usdt); // 450000000000000000000
-            let expect_supply_index_diff = math::ray_math::ray_mul(math::ray_math::ray_div(actual_amount, total_supply), _before_supply_index);
+            let expect_supply_index_diff = ray_math::ray_mul(ray_math::ray_div(actual_amount, total_supply), _before_supply_index);
             print(&expect_supply_index_diff);// 8999999999998177500000
 
             assert!(supply_diff_on_second_flash_loan_usdt == expect_supply_index_diff, 0);
@@ -893,7 +894,7 @@ module lending_core::manage_test {
         clock::destroy_for_testing(_clock);
         test_scenario::end(scenario);
     }
-    /* 
+    /*
         This integration test is divided into three methods, namely test_borrow_without_flash_loan、test_borrow_with_empty_flash_loan_rate and test_borrow_with_non_empty_flash_loan_rate
         The above three methods should result the same user balance.
 
@@ -911,7 +912,7 @@ module lending_core::manage_test {
             base::initial_protocol(&mut user_a_scenario, &user_a_test_clock);
         };
 
-        // UserA deposit 100k 
+        // UserA deposit 100k
         test_scenario::next_tx(&mut user_a_scenario, USER_A);
         {
             deposit_in_empty_pool_for_testing<SUI_TEST>(&mut user_a_scenario, &user_a_test_clock, SUI_ASSET_ID, 100000_000000000);
@@ -958,7 +959,7 @@ module lending_core::manage_test {
 
             test_scenario::return_shared(sui_pool);
         };
-        
+
         // check user balance and check pool balance
         test_scenario::next_tx(&mut user_a_scenario, USER_A);
         {
@@ -983,9 +984,9 @@ module lending_core::manage_test {
         };
         clock::destroy_for_testing(user_a_test_clock);
         test_scenario::end(user_a_scenario);
-    }  
-    
-    /* 
+    }
+
+    /*
         1.UserA deposit 100k
         2.UserA borrow 50 Sui
         3.1 year passed
@@ -1002,7 +1003,7 @@ module lending_core::manage_test {
             base::initial_protocol(&mut user_a_scenario, &user_a_test_clock);
         };
 
-        // UserA deposit 100k 
+        // UserA deposit 100k
         test_scenario::next_tx(&mut user_a_scenario, USER_A);
         {
             deposit_in_empty_pool_for_testing<SUI_TEST>(&mut user_a_scenario, &user_a_test_clock, SUI_ASSET_ID, 100000_000000000);
@@ -1108,7 +1109,7 @@ module lending_core::manage_test {
 
             test_scenario::return_shared(sui_pool);
         };
-        
+
         // check user balance and check pool balance
         test_scenario::next_tx(&mut user_a_scenario, USER_A);
         {
@@ -1134,7 +1135,7 @@ module lending_core::manage_test {
         clock::destroy_for_testing(user_a_test_clock);
         test_scenario::end(user_a_scenario);
     }
-    /* 
+    /*
         1.UserA deposit 100k
         2.UserA borrow 50 Sui
         3.1 year passed
@@ -1151,7 +1152,7 @@ module lending_core::manage_test {
             base::initial_protocol(&mut user_a_scenario, &user_a_test_clock);
         };
 
-        // UserA deposit 100k 
+        // UserA deposit 100k
         test_scenario::next_tx(&mut user_a_scenario, USER_A);
         {
             deposit_in_empty_pool_for_testing<SUI_TEST>(&mut user_a_scenario, &user_a_test_clock, SUI_ASSET_ID, 100000_000000000);
@@ -1232,12 +1233,12 @@ module lending_core::manage_test {
             let coin = coin::mint_for_testing<SUI_TEST>(fee_to_supplier + fee_to_treasury , test_scenario::ctx(&mut user_a_scenario));
             let total_fee = coin::into_balance(coin);
             balance::join(&mut loan_balance, total_fee);
-            
+
             assert!(fee_to_supplier == 50000000, 0);
             assert!(fee_to_treasury == 10000000, 0);
 
             let excess_balance = lending::flash_repay_with_ctx<SUI_TEST>(&user_a_test_clock, &mut storage, &mut sui_pool, receipt, loan_balance, test_scenario::ctx(&mut user_a_scenario));
-            
+
             assert!(balance::value(&excess_balance) == 0, 0);
 
             let (supply_index, borrow_index) = storage::get_index(&mut storage, SUI_ASSET_ID);

@@ -8,7 +8,7 @@ module lending_core::incentive_v3_integration_test {
     use std::vector::{Self};
     use sui::transfer;
     use sui::balance::{Self, Balance};
-    use math::ray_math::{Self};
+    use navi_math::ray_math::{Self};
     use sui::vec_map::{Self, VecMap};
 
     use oracle::oracle::{Self, OracleAdminCap, PriceOracle};
@@ -48,7 +48,7 @@ module lending_core::incentive_v3_integration_test {
         {
             incentive_v3_util::init_protocol( scenario_mut);
             incentive_v3_util::user_deposit<USDC_TEST_V2>(scenario_mut, OWNER, 1, 10000_000000, &clock);
-        
+
         };
 
         // 1. User A deposits 1000 SUI and borrows 1000 USDC
@@ -276,14 +276,14 @@ module lending_core::incentive_v3_integration_test {
 
             let (_, enable, rate, last_update_at, global_index) = incentive_v3::get_rule_params_for_testing<USDC_TEST_V2, USDC_TEST_V2>(&incentive, 3);
             assert!(enable, 0);
-            assert!(rate == 30_000000 * 1_000000000000000000000000000 / 86400000, 0);  
+            assert!(rate == 30_000000 * 1_000000000000000000000000000 / 86400000, 0);
             assert!(last_update_at == 365 * 86400 * 1000, 0);
             // global index = 5578849381437234417328810 --> 15_500000 * 1_000000000000000000000000000 / 86400000 * 86400000 * 365 / 1014_097999997(total_borrow_usdc)
             assert!(global_index == 15_500000 * 1_000000000000000000000000000 / 86400000 * 86400000 * 365 / total_borrow_usdc, 0);
 
             let (_, enable, rate, last_update_at, global_index) = incentive_v3::get_rule_params_for_testing<USDC_TEST_V2, COIN_TEST_V2>(&incentive, 3);
             assert!(enable, 0);
-            assert!(rate == 15_000000000000 * 1_000000000000000000000000000 / 86400000, 0);  
+            assert!(rate == 15_000000000000 * 1_000000000000000000000000000 / 86400000, 0);
             assert!(last_update_at == 365 * 86400 * 1000, 0);
             assert!(global_index == 0, 0);
 
@@ -314,7 +314,7 @@ module lending_core::incentive_v3_integration_test {
 
             let (asset_coin_types, reward_coin_types, user_claimable_rewards, user_claimed_rewards, rule_ids) = incentive_v3::parse_claimable_rewards(user_a_rewards);
 
-            // Check asset coin types   
+            // Check asset coin types
             assert!(vector::length(&asset_coin_types) == 2, 0);
             assert!(*vector::borrow(&asset_coin_types, 0) == type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(*vector::borrow(&asset_coin_types, 1) == type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
@@ -323,12 +323,12 @@ module lending_core::incentive_v3_integration_test {
             assert!(vector::length(&reward_coin_types) == 2, 0);
             assert!(*vector::borrow(&reward_coin_types, 0) == type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(*vector::borrow(&reward_coin_types, 1) == type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
-            
+
             // Check claimable rewards
             assert!(vector::length(&user_claimable_rewards) == 2, 0);
             assert!(*vector::borrow(&user_claimable_rewards, 0) == 0, 0); // USDC rewards
             assert!(*vector::borrow(&user_claimable_rewards, 1) == 100_000000000 * 365, 0); // SUI rewards
-    
+
             // Check claimed rewards
             assert!(vector::length(&user_claimed_rewards) == 2, 0);
             assert!(*vector::borrow(&user_claimed_rewards, 0) == 15_500000 * 365, 0); // USDC claimed
@@ -394,7 +394,7 @@ module lending_core::incentive_v3_integration_test {
             assert!(*vector::borrow(&reward_coin_types, 1) == type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(*vector::borrow(&reward_coin_types, 2) == type_name::into_string(type_name::get<ETH_TEST_V2>()), 0);
             assert!(*vector::borrow(&reward_coin_types, 3) == type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
-            
+
             // Get effective balance for USDC
             let (_, user_effective_borrow, _, total_borrow) = incentive_v3::get_effective_balance(&mut storage, 1, USER_A);
 
@@ -404,7 +404,7 @@ module lending_core::incentive_v3_integration_test {
             assert!(*vector::borrow(&user_claimable_rewards, 1) == 30_000000 * 365 * user_effective_borrow / total_borrow, 0); // USDC rewards
             assert!(*vector::borrow(&user_claimable_rewards, 2) == 0, 0); // ETH rewards
             assert!(*vector::borrow(&user_claimable_rewards, 3) == 0, 0); // SUI rewards
-    
+
             // Check claimed rewards
             assert!(vector::length(&user_claimed_rewards) == 4, 0);
             assert!(*vector::borrow(&user_claimed_rewards, 0) == 0, 0); // No COIN claimed yet
@@ -428,7 +428,7 @@ module lending_core::incentive_v3_integration_test {
 
             let (addr, _, _, _, _) = incentive_v3::get_rule_params_for_testing<USDC_TEST_V2, COIN_TEST_V2>(&incentive, 3);
             assert!(vector::contains(coin_rules, &addr), 0);
-            
+
             test_scenario::return_shared(storage);
             test_scenario::return_shared(incentive);
         };
@@ -499,7 +499,7 @@ module lending_core::incentive_v3_integration_test {
             assert!(*vector::borrow(&user_claimable_rewards, 1) == 0, 0); // USDC rewards
             assert!(*vector::borrow(&user_claimable_rewards, 2) == 0, 0); // ETH rewards
             assert!(*vector::borrow(&user_claimable_rewards, 3) == 0, 0); // SUI rewards
-    
+
             // Check claimed rewards
             assert!(vector::length(&user_claimed_rewards) == 4, 0);
             assert!(*vector::borrow(&user_claimed_rewards, 0) == user_b_coin_amount, 0); // COIN claimed
@@ -540,7 +540,7 @@ module lending_core::incentive_v3_integration_test {
             test_scenario::return_shared(storage);
             test_scenario::return_shared(funds);
         };
-        
+
         // check state
         test_scenario::next_tx(scenario_mut, USER_A);
         {
@@ -549,7 +549,7 @@ module lending_core::incentive_v3_integration_test {
 
             // get effective borrow for USDC
             let (_, user_effective_borrow, _, total_borrow) = incentive_v3::get_effective_balance(&mut storage, 1, USER_A);
-        
+
             // check how many rewards user A get
             let coin_second = test_scenario::take_from_sender<Coin<USDC_TEST_V2>>(scenario_mut);
             let user_a_usdc_amount_second:u256 = (coin::value(&coin_second) as u256);
@@ -558,7 +558,7 @@ module lending_core::incentive_v3_integration_test {
             let coin_first = test_scenario::take_from_sender<Coin<USDC_TEST_V2>>(scenario_mut);
             let user_a_usdc_amount_first = (coin::value(&coin_first) as u256);
             assert!(user_a_usdc_amount_first == (15_500000 * 365), 0);
-            
+
             // check state for user A
             let user_a_rewards = incentive_v3::get_user_claimable_rewards(&clock, &mut storage, &incentive, USER_A);
             assert!(vector::length(&user_a_rewards) == 4, 0);
@@ -578,7 +578,7 @@ module lending_core::incentive_v3_integration_test {
             assert!(*vector::borrow(&reward_coin_types, 1) == type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(*vector::borrow(&reward_coin_types, 2) == type_name::into_string(type_name::get<ETH_TEST_V2>()), 0);
             assert!(*vector::borrow(&reward_coin_types, 3) == type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
-            
+
             // Get effective balance for USDC
             let (_, user_effective_borrow, _, total_borrow) = incentive_v3::get_effective_balance(&mut storage, 1, USER_A);
 
@@ -588,7 +588,7 @@ module lending_core::incentive_v3_integration_test {
             assert!(*vector::borrow(&user_claimable_rewards, 1) == 0, 0); // USDC rewards
             assert!(*vector::borrow(&user_claimable_rewards, 2) == 0, 0); // ETH rewards
             assert!(*vector::borrow(&user_claimable_rewards, 3) == 0, 0); // SUI rewards
-    
+
             // Check claimed rewards
             assert!(vector::length(&user_claimed_rewards) == 4, 0);
             assert!(*vector::borrow(&user_claimed_rewards, 0) == 0, 0); // No COIN claimed yet
@@ -609,8 +609,8 @@ module lending_core::incentive_v3_integration_test {
 
             let (addr, _, _, _, _) = incentive_v3::get_rule_params_for_testing<USDC_TEST_V2, COIN_TEST_V2>(&incentive, 3);
             assert!(vector::contains(coin_rules, &addr), 0);
-            
-            test_scenario::return_to_sender(scenario_mut, coin_first);  
+
+            test_scenario::return_to_sender(scenario_mut, coin_first);
             test_scenario::return_to_sender(scenario_mut, coin_second);
             test_scenario::return_shared(storage);
             test_scenario::return_shared(incentive);
@@ -621,7 +621,7 @@ module lending_core::incentive_v3_integration_test {
         {
             let owner_cap = test_scenario::take_from_sender<IncentiveOwnerCap>(scenario_mut);
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
-            
+
             let (addr, _, _, _, _) = incentive_v3::get_rule_params_for_testing<USDC_TEST_V2, COIN_TEST_V2>(&incentive, 3);
             manage::disable_incentive_v3_by_rule_id<USDC_TEST_V2>(&owner_cap, &mut incentive, addr, test_scenario::ctx(scenario_mut));
 
@@ -643,7 +643,7 @@ module lending_core::incentive_v3_integration_test {
 
             // get effective borrow for USDC
             let (_, user_effective_borrow, _, total_borrow) = incentive_v3::get_effective_balance(&mut storage, 1, USER_A);
-        
+
             // check how many rewards user A get
             let user_a_coin_amount = (incentive_v3_util::get_coin_amount<COIN_TEST_V2>(scenario_mut, USER_A) as u256);
             assert!(user_a_coin_amount == 0, 0);
@@ -667,7 +667,7 @@ module lending_core::incentive_v3_integration_test {
             assert!(*vector::borrow(&reward_coin_types, 1) == type_name::into_string(type_name::get<USDC_TEST_V2>()), 0);
             assert!(*vector::borrow(&reward_coin_types, 2) == type_name::into_string(type_name::get<ETH_TEST_V2>()), 0);
             assert!(*vector::borrow(&reward_coin_types, 3) == type_name::into_string(type_name::get<SUI_TEST_V2>()), 0);
-            
+
             // Get effective balance for USDC
             let (_, user_effective_borrow, _, total_borrow) = incentive_v3::get_effective_balance(&mut storage, 1, USER_A);
 
@@ -677,7 +677,7 @@ module lending_core::incentive_v3_integration_test {
             assert!(*vector::borrow(&user_claimable_rewards, 1) == 0, 0); // USDC rewards
             assert!(*vector::borrow(&user_claimable_rewards, 2) == 0, 0); // ETH rewards
             assert!(*vector::borrow(&user_claimable_rewards, 3) == 0, 0); // SUI rewards
-    
+
             // Check claimed rewards
             assert!(vector::length(&user_claimed_rewards) == 4, 0);
             assert!(*vector::borrow(&user_claimed_rewards, 0) == 0, 0); // No COIN claimed yet
@@ -704,9 +704,9 @@ module lending_core::incentive_v3_integration_test {
         };
 
         clock::destroy_for_testing(clock);
-        test_scenario::end(scenario);  
+        test_scenario::end(scenario);
     }
-    
+
     #[test]
     public fun test_deposit_borrow_repay_withdraw_claim() {
         let scenario = test_scenario::begin(OWNER);
@@ -731,7 +731,7 @@ module lending_core::incentive_v3_integration_test {
             let oracle = test_scenario::take_shared<PriceOracle>(scenario_mut);
             let incentive_v2 = test_scenario::take_shared<Incentive_V2>(scenario_mut);
             let incentive_v3 = test_scenario::take_shared<Incentive_V3>(scenario_mut);
-            
+
             let balance =incentive_v3::borrow<SUI_TEST_V2>(&clock, &oracle, &mut storage, &mut pool, 0, 10_000000000, &mut incentive_v2, &mut incentive_v3, test_scenario::ctx(scenario_mut));
             assert!(balance::value(&balance) == 10_000000000, 0);
 
@@ -756,7 +756,7 @@ module lending_core::incentive_v3_integration_test {
 
             let coin = test_scenario::take_from_sender<Coin<SUI_TEST_V2>>(scenario_mut);
             let balance = incentive_v3::repay<SUI_TEST_V2>(&clock, &oracle, &mut storage, &mut pool, 0, coin, 10_000000000, &mut incentive_v2, &mut incentive_v3, test_scenario::ctx(scenario_mut));
-            
+
             balance::destroy_zero(balance);
             test_scenario::return_shared(pool);
             test_scenario::return_shared(storage);
@@ -769,7 +769,7 @@ module lending_core::incentive_v3_integration_test {
         test_scenario::next_tx(scenario_mut, OWNER);
         {
             let incentive = test_scenario::take_shared<Incentive_V3>(scenario_mut);
-            
+
             // SUI supply rate
             let (_, enable, rate, last_update_at, global_index) = incentive_v3::get_rule_params_for_testing<SUI_TEST_V2, SUI_TEST_V2>(&incentive, 1);
             assert!(enable, 0);
@@ -818,7 +818,7 @@ module lending_core::incentive_v3_integration_test {
 
             let coin = coin::from_balance(balance, test_scenario::ctx(scenario_mut));
             transfer::public_transfer(coin, test_scenario::sender(scenario_mut));
-            
+
             test_scenario::return_shared(pool);
             test_scenario::return_shared(storage);
             test_scenario::return_shared(oracle);
@@ -869,7 +869,7 @@ module lending_core::incentive_v3_integration_test {
             let incentive_v2 = test_scenario::take_shared<Incentive_V2>(scenario_mut);
             let incentive_v3 = test_scenario::take_shared<Incentive_V3>(scenario_mut);
             let account_cap = test_scenario::take_from_sender<AccountCap>(scenario_mut);
-            
+
             let balance =incentive_v3::borrow_with_account_cap<SUI_TEST_V2>(&clock, &oracle, &mut storage, &mut pool, 0, 10_000000000, &mut incentive_v2, &mut incentive_v3, &account_cap);
             assert!(balance::value(&balance) == 10_000000000, 0);
 
@@ -896,7 +896,7 @@ module lending_core::incentive_v3_integration_test {
 
             let coin = test_scenario::take_from_sender<Coin<SUI_TEST_V2>>(scenario_mut);
             let balance = incentive_v3::repay_with_account_cap<SUI_TEST_V2>(&clock, &oracle, &mut storage, &mut pool, 0, coin, &mut incentive_v2, &mut incentive_v3, &account_cap);
-            
+
             balance::destroy_zero(balance);
             test_scenario::return_shared(pool);
             test_scenario::return_shared(storage);
@@ -962,7 +962,7 @@ module lending_core::incentive_v3_integration_test {
 
             let coin = coin::from_balance(balance, test_scenario::ctx(scenario_mut));
             transfer::public_transfer(coin, test_scenario::sender(scenario_mut));
-            
+
             test_scenario::return_shared(pool);
             test_scenario::return_shared(storage);
             test_scenario::return_shared(oracle);

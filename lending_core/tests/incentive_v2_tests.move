@@ -7,8 +7,8 @@ module lending_core::incentive_v2_test {
     use sui::clock::{Self, Clock};
     use sui::test_scenario::{Self, Scenario};
 
-    use math::ray_math;
-    use math::safe_math;
+    use navi_math::ray_math;
+    use navi_math::safe_math;
     use oracle::oracle::{PriceOracle};
     use lending_core::base::{Self};
     use lending_core::pool::{Self, Pool};
@@ -34,7 +34,7 @@ module lending_core::incentive_v2_test {
             incentive_v2::create_and_transfer_owner(&storage_owner_cap, test_scenario::ctx(scenario));
             test_scenario::return_to_sender(scenario, storage_owner_cap);
         };
-        
+
         // create incentive
         test_scenario::next_tx(scenario, OWNER);
         {
@@ -120,7 +120,7 @@ module lending_core::incentive_v2_test {
         let storage = test_scenario::take_shared<Storage>(scenario);
         let incentive = test_scenario::take_shared<Incentive>(scenario);
         let incentive_v3 = test_scenario::take_shared<IncentiveV3>(scenario);
-        
+
         incentive_v3::entry_deposit(clock, &mut storage, pool, asset, deposit_coin, amount, &mut incentive, &mut incentive_v3, test_scenario::ctx(scenario));
 
         test_scenario::return_shared(storage);
@@ -133,7 +133,7 @@ module lending_core::incentive_v2_test {
         let storage = test_scenario::take_shared<Storage>(scenario);
         let incentive = test_scenario::take_shared<Incentive>(scenario);
         let incentive_v3 = test_scenario::take_shared<IncentiveV3>(scenario);
-        
+
         incentive_v3::entry_deposit_on_behalf_of_user(clock, &mut storage, pool, asset, deposit_coin, amount, user, &mut incentive, &mut incentive_v3, test_scenario::ctx(scenario));
 
         test_scenario::return_shared(storage);
@@ -146,7 +146,7 @@ module lending_core::incentive_v2_test {
         let storage = test_scenario::take_shared<Storage>(scenario);
         let incentive = test_scenario::take_shared<Incentive>(scenario);
         let incentive_v3 = test_scenario::take_shared<IncentiveV3>(scenario);
-        
+
         incentive_v3::deposit_with_account_cap(clock, &mut storage, pool, asset, deposit_coin, &mut incentive, &mut incentive_v3, account_cap);
 
         test_scenario::return_shared(storage);
@@ -160,7 +160,7 @@ module lending_core::incentive_v2_test {
         let price_oracle = test_scenario::take_shared<PriceOracle>(scenario);
         let incentive = test_scenario::take_shared<Incentive>(scenario);
         let incentive_v3 = test_scenario::take_shared<IncentiveV3>(scenario);
-        
+
         incentive_v3::entry_repay_on_behalf_of_user(clock, &price_oracle, &mut storage, pool, asset, deposit_coin, amount, user, &mut incentive, &mut incentive_v3, test_scenario::ctx(scenario));
 
         test_scenario::return_shared(storage);
@@ -174,7 +174,7 @@ module lending_core::incentive_v2_test {
     //     let storage = test_scenario::take_shared<Storage>(scenario);
     //     let incentive = test_scenario::take_shared<Incentive>(scenario);
     //     let incentive_v3 = test_scenario::take_shared<IncentiveV1>(scenario);
-        
+
     //     incentive_v2::claim_reward_non_entry(clock, &mut storage, pool, asset, deposit_coin, &mut incentive_v3, &mut incentive, test_scenario::ctx(scenario));
 
     //     test_scenario::return_shared(storage);
@@ -188,7 +188,7 @@ module lending_core::incentive_v2_test {
         let incentive = test_scenario::take_shared<Incentive>(scenario);
         let incentive_v3 = test_scenario::take_shared<IncentiveV3>(scenario);
         let price_oracle = test_scenario::take_shared<PriceOracle>(scenario);
-        
+
         incentive_v3::entry_borrow(clock, &price_oracle, &mut storage, pool, asset, amount, &mut incentive, &mut incentive_v3, test_scenario::ctx(scenario));
 
         test_scenario::return_shared(storage);
@@ -202,7 +202,7 @@ module lending_core::incentive_v2_test {
         let incentive = test_scenario::take_shared<Incentive>(scenario);
         let incentive_v3 = test_scenario::take_shared<IncentiveV3>(scenario);
         let price_oracle = test_scenario::take_shared<PriceOracle>(scenario);
-        
+
         let _balance = incentive_v3::borrow_with_account_cap(clock, &price_oracle, &mut storage, pool, asset, amount, &mut incentive, &mut incentive_v3, account_cap);
 
         test_scenario::return_shared(storage);
@@ -217,7 +217,7 @@ module lending_core::incentive_v2_test {
         let storage = test_scenario::take_shared<Storage>(scenario);
         let incentive = test_scenario::take_shared<Incentive>(scenario);
         let price_oracle = test_scenario::take_shared<PriceOracle>(scenario);
-        
+
         incentive_v2::claim_reward(clock, &mut incentive, funds_pool, &mut storage, asset, option, test_scenario::ctx(scenario));
 
         test_scenario::return_shared(storage);
@@ -452,7 +452,7 @@ module lending_core::incentive_v2_test {
                 current_timestamp + 1000 * 60 * 60, // end, 2023-11-15 09:00:00
                 0, // closed
                 100_000000, // total_supply
-                1, // option 
+                1, // option
                 0, // asset
                 1000000000000000000000000000 // factor
             );
@@ -634,7 +634,7 @@ module lending_core::incentive_v2_test {
 
             test_scenario::return_shared(pool);
         };
-        
+
         let _before_index_reward2 = 0;
         let _before_total_rewards_of_user2 = 0;
         test_scenario::next_tx(&mut scenario, OWNER);
@@ -853,7 +853,7 @@ module lending_core::incentive_v2_test {
                 current_timestamp + 1000 * 60 * 60, // end, 2023-11-15 09:00:00
                 0, // closed
                 100_000000, // total_supply
-                1, // option 
+                1, // option
                 0, // asset
                 1000000000000000000000000000 // factor
             );
@@ -1009,7 +1009,7 @@ module lending_core::incentive_v2_test {
             let storage = test_scenario::take_shared<Storage>(&scenario);
             let incentive = test_scenario::take_shared<Incentive>(&scenario);
             let price_oracle = test_scenario::take_shared<PriceOracle>(&scenario);
-            
+
             let _balance = incentive_v2::claim_reward_non_entry(&_clock, &mut incentive, &mut usdt_funds, &mut storage, 0, 1, test_scenario::ctx(&mut scenario));
             assert!(balance::value(&_balance) > 0, 0);
 
@@ -1052,7 +1052,7 @@ module lending_core::incentive_v2_test {
                 current_timestamp + 1000 * 60 * 60, // end, 2023-11-15 09:00:00
                 0, // closed
                 100_000000, // total_supply
-                1, // option 
+                1, // option
                 0, // asset
                 1000000000000000000000000000 // factor
             );
@@ -1072,7 +1072,7 @@ module lending_core::incentive_v2_test {
                 let coin = coin::mint_for_testing<USDC_TEST>(100_000000, test_scenario::ctx(&mut scenario));
 
                 entry_deposit_with_account_cap_for_testing(&mut scenario, &_clock, &mut pool, coin, 1, &account_cap);
-                
+
                 let (total_supply, _, _) = pool::get_pool_info(&pool);
                 assert!(total_supply == 100_000000, 0);
 
@@ -1228,7 +1228,7 @@ module lending_core::incentive_v2_test {
             let account_cap = test_scenario::take_from_sender<AccountCap>(&scenario);
             let account_owner = account::account_owner(&account_cap);
             assert!(account_owner != OWNER, 0);
-            
+
             {
                 clock::increment_for_testing(&mut _clock, 1000 * 10); // 40 seconds after the reward starts
                 let pool = test_scenario::take_shared<Pool<SUI_TEST>>(&scenario);
@@ -1250,13 +1250,13 @@ module lending_core::incentive_v2_test {
             let account_cap = test_scenario::take_from_sender<AccountCap>(&scenario);
             let account_owner = account::account_owner(&account_cap);
             assert!(account_owner != OWNER, 0);
-            
+
             clock::increment_for_testing(&mut _clock, 1000 * 10); // 50 seconds after the reward starts
             let usdt_funds = test_scenario::take_shared<IncentiveFundsPool<USDT_TEST>>(&scenario);
             let storage = test_scenario::take_shared<Storage>(&scenario);
             let incentive = test_scenario::take_shared<Incentive>(&scenario);
             let price_oracle = test_scenario::take_shared<PriceOracle>(&scenario);
-            
+
             let _balance = incentive_v2::claim_reward_with_account_cap(&_clock, &mut incentive, &mut usdt_funds, &mut storage, 0, 1, &account_cap);
             assert!(balance::value(&_balance) > 0, 0);
 
@@ -1295,7 +1295,7 @@ module lending_core::incentive_v2_test {
 
             let active_pools = incentive_v2::get_pool_objects(&incentive);
             let inactive_pools = incentive_v2::get_inactive_pool_objects(&incentive);
-            
+
             assert!(vector::length(&active_pools) == 0, 0);
             assert!(vector::length(&inactive_pools) == 0, 0);
             test_scenario::return_shared(incentive);
@@ -1418,7 +1418,7 @@ module lending_core::incentive_v2_test {
             let storage = test_scenario::take_shared<Storage>(&scenario);
             let incentive = test_scenario::take_shared<Incentive>(&scenario);
             let price_oracle = test_scenario::take_shared<PriceOracle>(&scenario);
-            
+
             let _balance = incentive_v2::claim_reward_non_entry(&_clock, &mut incentive, &mut usdt_funds, &mut storage, 1, 1, test_scenario::ctx(&mut scenario));
             assert!(balance::value(&_balance) > 0, 0);
 
@@ -1447,13 +1447,13 @@ module lending_core::incentive_v2_test {
             let storage = test_scenario::take_shared<Storage>(&scenario);
             let incentive = test_scenario::take_shared<Incentive>(&scenario);
             let price_oracle = test_scenario::take_shared<PriceOracle>(&scenario);
-            
+
             let _balance = incentive_v2::claim_reward_non_entry(&_clock, &mut incentive, &mut usdt_funds, &mut storage, 1, 1, test_scenario::ctx(&mut scenario));
             assert!(balance::value(&_balance) > 0, 0);
 
             let active_pools = incentive_v2::get_pool_objects(&incentive);
             let inactive_pools = incentive_v2::get_inactive_pool_objects(&incentive);
-            
+
             assert!(vector::length(&active_pools) == 2, 0);
             assert!(vector::length(&inactive_pools) == 2, 0);
 
@@ -1482,13 +1482,13 @@ module lending_core::incentive_v2_test {
             let storage = test_scenario::take_shared<Storage>(&scenario);
             let incentive = test_scenario::take_shared<Incentive>(&scenario);
             let price_oracle = test_scenario::take_shared<PriceOracle>(&scenario);
-            
+
             let _balance = incentive_v2::claim_reward_non_entry(&_clock, &mut incentive, &mut usdt_funds, &mut storage, 1, 1, test_scenario::ctx(&mut scenario));
             assert!(balance::value(&_balance) == 0, 0);
 
             let active_pools = incentive_v2::get_pool_objects(&incentive);
             let inactive_pools = incentive_v2::get_inactive_pool_objects(&incentive);
-            
+
             assert!(vector::length(&active_pools) == 0, 0);
             assert!(vector::length(&inactive_pools) == 4, 0);
 
@@ -1506,7 +1506,7 @@ module lending_core::incentive_v2_test {
             let (_,_,_,_,_,_,_,_,_,_,last_update_at,_,_) = incentive_v2::get_pool_info(&incentive, _target_pool);
             assert!(last_update_at > _target_pool_update_time, 0);
             _target_pool_update_time = last_update_at;
-            
+
             test_scenario::return_shared(incentive);
         };
 
@@ -1563,7 +1563,7 @@ module lending_core::incentive_v2_test {
 
             let active_pools = incentive_v2::get_pool_objects(&incentive);
             let inactive_pools = incentive_v2::get_inactive_pool_objects(&incentive);
-            
+
             assert!(vector::length(&active_pools) == 2, 0);
             assert!(vector::length(&inactive_pools) == 4, 0);
             test_scenario::return_shared(incentive);
@@ -1576,13 +1576,13 @@ module lending_core::incentive_v2_test {
             let storage = test_scenario::take_shared<Storage>(&scenario);
             let incentive = test_scenario::take_shared<Incentive>(&scenario);
             let price_oracle = test_scenario::take_shared<PriceOracle>(&scenario);
-            
+
             let _balance = incentive_v2::claim_reward_non_entry(&_clock, &mut incentive, &mut usdt_funds, &mut storage, 1, 1, test_scenario::ctx(&mut scenario));
             assert!(balance::value(&_balance) > 0, 0);
 
             let active_pools = incentive_v2::get_pool_objects(&incentive);
             let inactive_pools = incentive_v2::get_inactive_pool_objects(&incentive);
-            
+
             assert!(vector::length(&active_pools) == 2, 0);
             assert!(vector::length(&inactive_pools) == 4, 0);
 
@@ -1601,7 +1601,7 @@ module lending_core::incentive_v2_test {
             assert!(last_update_at == _target_pool_update_time, 0);
             _target_pool_update_time = last_update_at;
             std::debug::print(&_target_pool_update_time);
-            
+
             test_scenario::return_shared(incentive);
         };
 
@@ -1632,7 +1632,7 @@ module lending_core::incentive_v2_test {
                 current_timestamp + 1000 * 60 * 60, // end, 2023-11-15 09:00:00
                 0, // closed
                 100_000000, // total_supply
-                1, // option 
+                1, // option
                 0, // asset
                 1000000000000000000000000000 // factor
             );
@@ -1759,7 +1759,7 @@ module lending_core::incentive_v2_test {
                 current_timestamp + 1000 * 60 * 60, // end, 2023-11-15 09:00:00
                 0, // closed
                 100_000000, // total_supply
-                3, // option 
+                3, // option
                 0, // asset
                 1000000000000000000000000000 // factor
             );

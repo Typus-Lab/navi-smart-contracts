@@ -8,10 +8,8 @@ git = "https://github.com/MystenLabs/sui.git"
 subdir = "crates/sui-framework/packages/sui-framework"
 rev = "mainnet"
 
-[dependencies.math]
-git = "https://github.com/naviprotocol/navi-smart-contracts.git"
-subdir = "math"
-rev = "main"
+[dependencies.navi_math]
+local = "../math"
 
 [dependencies.oracle]
 git = "https://github.com/naviprotocol/navi-smart-contracts.git"

@@ -5,7 +5,7 @@ module lending_core::lending_tests {
     use sui::coin::{Self};
     use sui::test_scenario::{Self};
 
-    use math::ray_math;
+    use navi_math::ray_math;
     use oracle::oracle::{Self, PriceOracle, OracleFeederCap};
     use lending_core::base;
     use lending_core::logic::{Self};
@@ -58,7 +58,7 @@ module lending_core::lending_tests {
         test_scenario::next_tx(&mut scenario, OWNER);
         {
             let pool = test_scenario::take_shared<Pool<SUI_TEST>>(&scenario);
-            
+
             base_lending_tests::base_deprecated_withdraw_for_testing(&mut scenario, &mut pool);
 
             test_scenario::return_shared(pool);
@@ -108,7 +108,7 @@ module lending_core::lending_tests {
         clock::destroy_for_testing(_clock);
         test_scenario::end(scenario);
     }
-    
+
     #[test] // deposit
     public fun test_deposit() {
         let scenario = test_scenario::begin(OWNER);
@@ -212,7 +212,7 @@ module lending_core::lending_tests {
             clock::destroy_for_testing(clock);
             test_scenario::return_shared(pool);
         };
-        
+
         clock::destroy_for_testing(_clock);
         test_scenario::end(scenario);
     }
@@ -350,7 +350,7 @@ module lending_core::lending_tests {
             let usdt_pool = test_scenario::take_shared<Pool<USDT_TEST>>(&scenario);
             let sui_pool = test_scenario::take_shared<Pool<SUI_TEST>>(&scenario);
             let usdt_coin = coin::mint_for_testing<USDT_TEST>(10000000_000000000, test_scenario::ctx(&mut scenario_liquidator));
-           
+
             base_lending_tests::base_liquidation_for_testing(
                 &mut scenario,
                 2,
@@ -364,7 +364,7 @@ module lending_core::lending_tests {
             test_scenario::return_shared(sui_pool);
             test_scenario::return_shared(usdt_pool);
         };
-        
+
         test_scenario::next_tx(&mut scenarioB, userB);
         {
             let storage = test_scenario::take_shared<Storage>(&scenario);
@@ -378,7 +378,7 @@ module lending_core::lending_tests {
             std::debug::print(&logic::user_collateral_value(&clock, &price_oracle, &mut storage, 0, userB));
             std::debug::print(&logic::user_loan_value(&clock, &price_oracle, &mut storage, 2, userB));
             std::debug::print(&logic::user_health_factor(&clock, &mut storage, &price_oracle, userB));
-            
+
             clock::destroy_for_testing(clock);
             test_scenario::return_shared(storage);
             test_scenario::return_shared(price_oracle);
@@ -511,7 +511,7 @@ module lending_core::lending_tests {
             let price_oracle = test_scenario::take_shared<PriceOracle>(&scenario);
             let clock = clock::create_for_testing(test_scenario::ctx(&mut scenario));
             clock::set_for_testing(&mut clock, 3000);
-            
+
             let avg_ltv = logic::calculate_avg_ltv(&clock, &price_oracle, &mut storage, userB);
             let avg_threshold = logic::calculate_avg_threshold(&clock, &price_oracle, &mut storage, userB);
             let health_factor_in_borrow = ray_math::ray_div(avg_threshold, avg_ltv);
@@ -623,7 +623,7 @@ module lending_core::lending_tests {
             let price_oracle = test_scenario::take_shared<PriceOracle>(&scenario);
             let clock = clock::create_for_testing(test_scenario::ctx(&mut scenarioB));
             clock::set_for_testing(&mut clock, 2000);
-            
+
             // expected error: expected_failure(abort_code = logic::LOGIC_LTV_NOT_SUFFICIENT)
             logic::execute_borrow_for_testing<USDT_TEST>(&clock, &price_oracle, &mut storage, 2, userB, 1_000000000); // No. 3
 
@@ -1285,7 +1285,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 100_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -1349,7 +1349,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 100_000000_000, 0);
                 assert!(borrow_balance == 1_000000_000, 0);
@@ -1405,7 +1405,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 100_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -1431,7 +1431,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 200_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -1500,7 +1500,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 100_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -1526,7 +1526,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 100_000000_000 + 10000000_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -1603,7 +1603,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 10000000_000000_000, 0);
                 assert!(borrow_balance == 5000000_000000_000, 0);
@@ -1632,7 +1632,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 10000000_000000_000, 0);
                 assert!(borrow_balance == 4000000_000000_000, 0);
@@ -1661,7 +1661,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 10000000_000000_000, 0);
                 assert!(borrow_balance == 1000000_000000_000, 0);
@@ -1709,7 +1709,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 10_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -1776,7 +1776,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 10_000000_000, 0);
                 assert!(borrow_balance == 5_000000_000, 0);
@@ -1805,7 +1805,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 10_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -1852,7 +1852,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 10_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -1881,7 +1881,7 @@ module lending_core::lending_tests {
             {
                 let storage = test_scenario::take_shared<Storage>(&user_a_scenario);
                 let usdc_pool = test_scenario::take_shared<Pool<USDC_TEST>>(&user_a_scenario);
-                
+
                 let (supply_balance, borrow_balance) = storage::get_user_balance(&mut storage, 1, UserA);
                 assert!(supply_balance == 10_000000_000, 0);
                 assert!(borrow_balance == 0, 0);
@@ -2004,7 +2004,7 @@ module lending_core::lending_tests {
             };
         };
 
-        
+
         test_scenario::next_tx(&mut scenario, UserA);
         {
             let storage = test_scenario::take_shared<Storage>(&scenario);
@@ -2033,7 +2033,7 @@ module lending_core::lending_tests {
             test_scenario::return_shared(sui_pool);
             test_scenario::return_shared(usdc_pool);
         };
-        
+
 
         test_scenario::end(scenario);
         clock::destroy_for_testing(test_clock);
