@@ -9,9 +9,9 @@ subdir = "crates/sui-framework/packages/sui-framework"
 rev = "mainnet"
 
 [dependencies.SupraOracle]
-git = "https://github.com/naviprotocol/supra-oracle.git"
-subdir = "supra_holder"
-rev = "main"
+git = "https://github.com/Typus-Lab/dora-interface.git"
+subdir = "sui/mainnet/supra_holder"
+rev = "master"
 
 [dependencies.Pyth]
 git = "https://github.com/naviprotocol/pyth-crosschain.git"
