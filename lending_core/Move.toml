@@ -12,9 +12,7 @@ rev = "mainnet"
 local = "../math"
 
 [dependencies.oracle]
-git = "https://github.com/naviprotocol/navi-smart-contracts.git"
-subdir = "oracle"
-rev = "main"
+local = "../oracle"
 
 [dependencies.utils]
 git = "https://github.com/naviprotocol/navi-smart-contracts.git"
