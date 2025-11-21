@@ -18,7 +18,7 @@ module lending_core::incentive_v3 {
     use sui::tx_context::{Self, TxContext};
     use sui::dynamic_field::{Self};
 
-    use navi_math::ray_math::{Self};
+    use lending_core::ray_math::{Self};
     use lending_core::error::{Self};
     use lending_core::pool::{Pool};
     use lending_core::version::{Self};
@@ -1079,7 +1079,7 @@ module lending_core::incentive_v3 {
 
     public fun get_borrow_fee_v2(incentive: &Incentive, user: address, asset_id: u8, amount: u64): u64 {
         let asset_borrow_fees = dynamic_field::borrow<ASSET_BORROW_FEES_KEY ,Table<u8, u64>>(&incentive.id, ASSET_BORROW_FEES_KEY {});
-        
+
         let fee_rate = incentive.borrow_fee_rate;
 
         if (table::contains(asset_borrow_fees, asset_id)) {
@@ -1087,7 +1087,7 @@ module lending_core::incentive_v3 {
         };
 
         let user_borrow_fees = dynamic_field::borrow<USER_BORROW_FEES_KEY ,Table<address, Table<u8, u64>>>(&incentive.id, USER_BORROW_FEES_KEY {});
-        if (table::contains(user_borrow_fees, user) 
+        if (table::contains(user_borrow_fees, user)
             && (table::contains(table::borrow(user_borrow_fees, user), asset_id))) {
                 fee_rate = *table::borrow(table::borrow(user_borrow_fees, user), asset_id)
         };
@@ -1415,7 +1415,7 @@ module lending_core::incentive_v3 {
         liquidate_amount: u64,
         incentive_v2: &mut IncentiveV2,
         incentive_v3: &mut Incentive,
-        system_state: &mut SuiSystemState, 
+        system_state: &mut SuiSystemState,
         ctx: &mut TxContext
     ) {
         incentive_v2::update_reward_all(clock, incentive_v2, storage, collateral_asset, @0x0);
@@ -1506,7 +1506,7 @@ module lending_core::incentive_v3 {
         liquidate_user: address,
         incentive_v2: &mut IncentiveV2,
         incentive_v3: &mut Incentive,
-        system_state: &mut SuiSystemState, 
+        system_state: &mut SuiSystemState,
         ctx: &mut TxContext
     ): (Balance<CollateralCoinType>, Balance<DebtCoinType>) {
         incentive_v2::update_reward_all(clock, incentive_v2, storage, collateral_asset, @0x0);

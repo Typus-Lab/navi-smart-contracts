@@ -5,7 +5,7 @@ module lending_core::lending {
     use sui::clock::{Clock};
     use sui::coin::{Self, Coin};
     use sui::tx_context::{Self, TxContext};
-    use utils::utils;
+    use lending_core::utils;
     use oracle::oracle::{Self, PriceOracle};
 
     use lending_core::logic::{Self};
@@ -56,7 +56,7 @@ module lending_core::lending {
         sender: address,
         amount: u64,
     }
-    
+
     struct RepayOnBehalfOfEvent has copy, drop {
         reserve: u8,
         sender: address,
@@ -481,7 +481,7 @@ module lending_core::lending {
         collateral_pool: &mut Pool<CollateralCoinType>,
         liquidate_user: address,
         liquidate_amount: u64,
-        system_state: &mut SuiSystemState, 
+        system_state: &mut SuiSystemState,
         ctx: &mut TxContext
     ): (Balance<CollateralCoinType>, Balance<DebtCoinType>) {
         let sender = tx_context::sender(ctx);

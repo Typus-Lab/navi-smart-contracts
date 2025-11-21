@@ -14,8 +14,8 @@ module lending_core::storage {
     use sui::dynamic_field::{Self};
     use sui_system::sui_system::{SuiSystemState};
 
-    use navi_math::ray_math;
-    use navi_math::safe_math;
+    use lending_core::ray_math;
+    use lending_core::safe_math;
     use lending_core::pool::{Self, Pool, PoolAdminCap};
     use lending_core::version::{Self};
     use lending_core::error::{Self};

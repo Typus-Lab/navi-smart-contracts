@@ -8,7 +8,7 @@ module lending_core::manage_test {
     use sui::test_scenario::{Self, Scenario};
     use sui::object::{ID};
 
-    use navi_math::ray_math;
+    use lending_core::ray_math;
     use lending_core::lib;
     use lending_core::logic;
     use lending_core::base;

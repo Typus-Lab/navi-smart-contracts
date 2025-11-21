@@ -10,7 +10,7 @@ module lending_core::flash_loan {
     use sui::balance::{Self, Balance};
     use sui::tx_context::{Self, TxContext};
 
-    use navi_math::ray_math;
+    use lending_core::ray_math;
     use lending_core::error::{Self};
     use lending_core::logic::{Self};
     use lending_core::version::{Self};
@@ -189,7 +189,7 @@ module lending_core::flash_loan {
         let to_treasury = _loan_amount * cfg.rate_to_treasury / constants::FlashLoanMultiple();
 
         let _balance = pool::withdraw_balance_v2(_pool, _loan_amount, _user, sui_system, ctx);
-        
+
         let _receipt = Receipt<CoinType> {
             user: _user,
             asset: *asset_id,

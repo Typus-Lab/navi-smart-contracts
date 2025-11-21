@@ -2,16 +2,14 @@
 
 [move]
 version = 3
-manifest_digest = "D95987F1C51A52917AAAEAF71754C42C230CFD480B1154CDACE45F1923E4A5AD"
-deps_digest = "04732BFEF428F74DE262001DC455D76B909EBC394B034A9A15CC095E4BDD9CEF"
+manifest_digest = "F31C219B654C8A7D48D62C0EAF1B811081D55A4FF3E420DE22EF4D6ED952A668"
+deps_digest = "52B406A7A21811BEF51751CF88DA0E76DAEFFEAC888D4F4060B1A72BBE7D8D35"
 dependencies = [
   { id = "Bridge", name = "Bridge" },
   { id = "MoveStdlib", name = "MoveStdlib" },
   { id = "Sui", name = "Sui" },
   { id = "SuiSystem", name = "SuiSystem" },
-  { id = "navi_math", name = "navi_math" },
   { id = "oracle", name = "oracle" },
-  { id = "utils", name = "utils" },
   { id = "volo_liquid_staking", name = "volo_liquid_staking" },
 ]
 
@@ -79,17 +77,6 @@ dependencies = [
 ]
 
 [[move.package]]
-id = "navi_math"
-source = { local = "../math" }
-
-dependencies = [
-  { id = "Bridge", name = "Bridge" },
-  { id = "MoveStdlib", name = "MoveStdlib" },
-  { id = "Sui", name = "Sui" },
-  { id = "SuiSystem", name = "SuiSystem" },
-]
-
-[[move.package]]
 id = "oracle"
 source = { local = "../oracle" }
 
@@ -117,14 +104,6 @@ source = { git = "https://github.com/Typus-Lab/dora-interface.git", rev = "maste
 dependencies = [
   { id = "Sui", name = "Sui" },
   { id = "supra_utils", name = "supra_utils" },
-]
-
-[[move.package]]
-id = "utils"
-source = { local = "../utils" }
-
-dependencies = [
-  { id = "Sui", name = "Sui" },
 ]
 
 [[move.package]]

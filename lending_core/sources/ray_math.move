@@ -1,6 +1,6 @@
 // title: WadRayMath module
 // Provides mul and div function for wads (decimal numbers with 18 digits precision) and rays (decimals with 27 digits)
-module navi_math::ray_math {
+module lending_core::ray_math {
     use sui::address; // max(u256) => address::max()
 
     const WAD: u256 = 1000000000000000000;
