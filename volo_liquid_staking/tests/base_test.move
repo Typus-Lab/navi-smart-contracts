@@ -1,12 +1,12 @@
 #[test_only]
 #[allow(unused_use, unused_field)]
-module liquid_staking::base_test {
+module volo_liquid_staking::base_test {
 
-    use liquid_staking::test_util::{Self, init_protocol, print, stake, unstake, print_raw, advance_epoch_and_check_status, advance_epoch_with_reward_amounts, end_test};
+    use volo_liquid_staking::test_util::{Self, init_protocol, print, stake, unstake, print_raw, advance_epoch_and_check_status, advance_epoch_with_reward_amounts, end_test};
 
-    use liquid_staking::cert::{Self, CERT, Metadata};
-    use liquid_staking::stake_pool::{Self, StakePool, AdminCap};
-    use liquid_staking::fee_config::{Self, FeeConfig};
+    use volo_liquid_staking::cert::{Self, CERT, Metadata};
+    use volo_liquid_staking::stake_pool::{Self, StakePool, AdminCap};
+    use volo_liquid_staking::fee_config::{Self, FeeConfig};
     use sui_system::staking_pool::{StakedSui, FungibleStakedSui};
     use sui::test_scenario::{Self, Scenario, next_tx, ctx, return_shared};
     use sui::test_utils;
@@ -75,7 +75,7 @@ module liquid_staking::base_test {
             print_raw(&active);
             scenario.return_to_sender(pool);
         };
-        
+
         test_scenario::end(scenario);
     }
 
@@ -83,7 +83,7 @@ module liquid_staking::base_test {
     fun test_unstake() {
         let mut scenario = test_scenario::begin(OWNER);
         init_protocol(&mut scenario);
-        
+
         next_tx(&mut scenario, OWNER);
         {
             let amount = stake(&mut scenario, 100 * DECIMALS, OWNER);
@@ -122,8 +122,8 @@ module liquid_staking::base_test {
         test_util::check_status(&mut scenario);
 
         // epoch3
-        advance_epoch_with_reward_amounts(0, 100, &mut scenario);    
-    
+        advance_epoch_with_reward_amounts(0, 100, &mut scenario);
+
         next_tx(&mut scenario, OWNER);
 
         test_util::refresh(&mut scenario, OWNER);
@@ -196,8 +196,8 @@ module liquid_staking::base_test {
         test_util::check_status(&mut scenario);
 
         // epoch3
-        advance_epoch_with_reward_amounts(0, 100, &mut scenario);    
-    
+        advance_epoch_with_reward_amounts(0, 100, &mut scenario);
+
         next_tx(&mut scenario, OWNER);
 
         test_util::refresh(&mut scenario, OWNER);
@@ -406,13 +406,13 @@ module liquid_staking::base_test {
 
         stake(&mut scenario, 100 * DECIMALS, OWNER);
         stake(&mut scenario, 100 * DECIMALS, OWNER);
-        
+
         let amount = unstake(&mut scenario, 100 * DECIMALS, OWNER);
         assert!(amount == 100 * DECIMALS - 100 * DECIMALS / 10000, 100);
 
         let amount = unstake(&mut scenario, 100 * DECIMALS, OWNER);
         print(b"amount", amount);
-        // 99990000499 ~= 99990000000 + 10000000 / 10000 / 2 
+        // 99990000499 ~= 99990000000 + 10000000 / 10000 / 2
         assert!(amount == 99990000499, 100);
 
         end_test(scenario);
@@ -484,7 +484,7 @@ module liquid_staking::base_test {
         //     return_shared(system_state);
         // };
 
-        // also test the sui reward is auto compound 
+        // also test the sui reward is auto compound
         while (i < 25) {
             next_tx(&mut scenario, OWNER);
             {
@@ -517,12 +517,12 @@ module liquid_staking::base_test {
             };
 
             advance_epoch_with_reward_amounts(0, 0, &mut scenario);
-            advance_epoch_with_reward_amounts(0, 4, &mut scenario);    
+            advance_epoch_with_reward_amounts(0, 4, &mut scenario);
             i = i + 1;
         };
 
         // assert!(scenario.ctx().epoch() == 52, 100);
-    
+
         next_tx(&mut scenario, OWNER);
 
         test_util::refresh(&mut scenario, OWNER);

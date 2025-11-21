@@ -17,8 +17,8 @@ module lending_core::pool {
 
     use sui_system::sui_system::{SuiSystemState};
     use sui::sui::{SUI};
-    use liquid_staking::stake_pool::{StakePool, OperatorCap};
-    use liquid_staking::cert::{Metadata, CERT};
+    use volo_liquid_staking::stake_pool::{StakePool, OperatorCap};
+    use volo_liquid_staking::cert::{Metadata, CERT};
 
     friend lending_core::lending;
     friend lending_core::storage;
@@ -202,7 +202,7 @@ module lending_core::pool {
             let _withdraw_balance = balance::split(&mut pool.balance, amount);
             _withdraw_balance
         };
-        
+
         emit(PoolWithdraw {
             sender: user,
             recipient: user,

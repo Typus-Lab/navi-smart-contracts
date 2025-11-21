@@ -4,7 +4,7 @@
 /// They don't grow in number but grow in value
 /// For example, the fair value of 1 CERT token vs. SUI increases over time as staking rewards accumulate, i.e., 1 CERT becomes worth increasingly more than 1 SUI.
 #[allow(duplicate_alias)]
-module liquid_staking::cert {
+module volo_liquid_staking::cert {
     use std::option::{Self};
     use sui::url::{Self, Url};
     use sui::coin::{Self, Coin};
@@ -13,7 +13,7 @@ module liquid_staking::cert {
     use sui::tx_context::{TxContext};
     use sui::object::{Self, UID};
     use sui::event;
-    use liquid_staking::stake_pool::{AdminCap};
+    use volo_liquid_staking::stake_pool::{AdminCap};
 
     /* friend liquid_staking::native_pool; */
 

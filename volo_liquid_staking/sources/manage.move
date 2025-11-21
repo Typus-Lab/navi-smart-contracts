@@ -1,4 +1,4 @@
-module liquid_staking::manage {
+module volo_liquid_staking::manage {
 
     const EIncompatibleVersion: u64 = 50001;
     const EIncompatiblePaused: u64 = 50002;

@@ -1,12 +1,12 @@
 #[test_only]
 #[allow(unused_use, unused_field)]
-module liquid_staking::test_util {
+module volo_liquid_staking::test_util {
 
-    use liquid_staking::cert::{Self, CERT, Metadata};
+    use volo_liquid_staking::cert::{Self, CERT, Metadata};
     use std::ascii::{Self, String};
     use std::string::{Self};
-    use liquid_staking::stake_pool::{Self, StakePool, AdminCap, OperatorCap};
-    use liquid_staking::fee_config::{Self, FeeConfig};
+    use volo_liquid_staking::stake_pool::{Self, StakePool, AdminCap, OperatorCap};
+    use volo_liquid_staking::fee_config::{Self, FeeConfig};
     use sui::test_scenario::{Self, Scenario, next_tx, ctx, return_shared};
     use sui::test_utils;
     use sui::coin::{Self};
@@ -149,7 +149,7 @@ module liquid_staking::test_util {
             let mut pool = scenario.take_from_sender<StakePool>();
             let mut system_state = test_scenario::take_shared<SuiSystemState>(scenario);
 
-            let sui = coin::mint_for_testing<SUI>(amount, ctx(scenario)); 
+            let sui = coin::mint_for_testing<SUI>(amount, ctx(scenario));
 
             let vsui = pool.stake(&mut metadata, &mut system_state, sui, ctx(scenario));
             ret = vsui.value();

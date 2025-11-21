@@ -1,4 +1,4 @@
-module liquid_staking::validator_pool {
+module volo_liquid_staking::validator_pool {
     use sui_system::staking_pool::{StakedSui, FungibleStakedSui, PoolTokenExchangeRate};
     use sui::sui::SUI;
     use sui::coin;
@@ -7,7 +7,7 @@ module liquid_staking::validator_pool {
     use std::u64::{min, max};
     use sui::bag::{Self, Bag};
     use sui::vec_map::{Self, VecMap};
-    use liquid_staking::manage::{Self, Manage};
+    use volo_liquid_staking::manage::{Self, Manage};
 
     #[test_only]
     use std::ascii::{Self};
@@ -111,7 +111,7 @@ module liquid_staking::validator_pool {
 
             let active_stake = if (validator.active_stake.is_some()) {
                 get_sui_amount(
-                    &validator.exchange_rate, 
+                    &validator.exchange_rate,
                     validator.active_stake.borrow().value()
                 )
             } else {
@@ -173,12 +173,12 @@ module liquid_staking::validator_pool {
     }
 
     public(package) fun refresh(
-        self: &mut ValidatorPool, 
-        system_state: &mut SuiSystemState, 
+        self: &mut ValidatorPool,
+        system_state: &mut SuiSystemState,
         ctx: &mut TxContext
     ): bool {
         self.manage.check_version();
-        
+
         if(self.total_sui_supply() == 0) {
             return false
         };
@@ -218,7 +218,7 @@ module liquid_staking::validator_pool {
         };
 
         i = self.validator_infos.length();
-        
+
         while (i > 0) {
             i = i - 1;
 
@@ -237,7 +237,7 @@ module liquid_staking::validator_pool {
             self.refresh_validator_info(i);
 
             // convert inactive stake to active stake
-            if (self.validator_infos[i].inactive_stake.is_some() 
+            if (self.validator_infos[i].inactive_stake.is_some()
                 && self.validator_infos[i].inactive_stake.borrow().stake_activation_epoch() <= ctx.epoch()
             ) {
                 let inactive_stake = self.take_all_inactive_stake(i);
@@ -252,8 +252,8 @@ module liquid_staking::validator_pool {
     }
 
     public(package) fun stake_pending_sui(
-        self: &mut ValidatorPool, 
-        system_state: &mut SuiSystemState, 
+        self: &mut ValidatorPool,
+        system_state: &mut SuiSystemState,
         ctx: &mut TxContext
     ): bool {
         let mut i = self.validator_infos.length();
@@ -267,13 +267,13 @@ module liquid_staking::validator_pool {
             let validator_address = self.validator_infos[i].validator_address;
             let assigned_weight = self.validator_infos[i].assigned_weight;
             self.increase_validator_stake(
-                system_state, 
+                system_state,
                 validator_address,
                 sui_per_weight * assigned_weight,
                 ctx
             );
         };
-        
+
 
         true
     }
@@ -300,7 +300,7 @@ module liquid_staking::validator_pool {
         option::none()
     }
 
-    /// Update the total sui amount for the validator and modify the 
+    /// Update the total sui amount for the validator and modify the
     /// pool sui supply accordingly assumes the exchange rate is up to date
     fun refresh_validator_info(self: &mut ValidatorPool, i: u64) {
         let validator_info = &mut self.validator_infos[i];
@@ -311,7 +311,7 @@ module liquid_staking::validator_pool {
         if (validator_info.active_stake.is_some()) {
             let active_stake = validator_info.active_stake.borrow();
             let active_sui_amount = get_sui_amount(
-                &validator_info.exchange_rate, 
+                &validator_info.exchange_rate,
                 active_stake.value()
             );
 
@@ -353,7 +353,7 @@ module liquid_staking::validator_pool {
         self.rebalance(option::some<VecMap<address, u64>>(validator_weights), system_state, ctx);
 
         // There is a chance that the validator weights are not set correctly
-        // due to sui pool balance not meeting the minimum stake threshold 
+        // due to sui pool balance not meeting the minimum stake threshold
         // to create a new validator.
         self.verify_validator_weights(validator_weights);
     }
@@ -386,7 +386,7 @@ module liquid_staking::validator_pool {
         });
 
         assert!(weight_sum == self.total_weight, EInvalidValidatorWeightSum);
-        assert!(match_num == non_zero_weights_count, EInvalidValidatorSize);  
+        assert!(match_num == non_zero_weights_count, EInvalidValidatorSize);
     }
 
 
@@ -445,7 +445,7 @@ module liquid_staking::validator_pool {
         // 3. decrease the stake for validators that have more stake than the target amount
         validator_addresses.length().do!(|i| {
             if (validator_current_amounts[i] > validator_target_amounts[i]) {
-                // the sui will be unstaked, if target amount is 0, 
+                // the sui will be unstaked, if target amount is 0,
                 // the validator will be removed upon the next refresh
                 self.decrease_validator_stake(
                     system_state,
@@ -507,7 +507,7 @@ module liquid_staking::validator_pool {
 
         staked_sui_amount
     }
-    
+
     public (package) fun decrease_validator_stake(
         self: &mut ValidatorPool,
         system_state: &mut SuiSystemState,
@@ -534,14 +534,14 @@ module liquid_staking::validator_pool {
     }
 
     public(package) fun join_stake(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         system_state: &mut SuiSystemState,
-        stake: StakedSui, 
+        stake: StakedSui,
         ctx: &mut TxContext
     ) {
         let validator_index = self.get_or_add_validator_index_by_staking_pool_id_mut(
-            system_state, 
-            stake.pool_id(), 
+            system_state,
+            stake.pool_id(),
             ctx
         );
 
@@ -554,7 +554,7 @@ module liquid_staking::validator_pool {
     }
 
     fun join_inactive_stake_to_validator(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         validator_index: u64,
         stake: StakedSui,
     ) {
@@ -570,7 +570,7 @@ module liquid_staking::validator_pool {
     }
 
     fun join_fungible_staked_sui_to_validator(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         validator_index: u64,
         fungible_staked_sui: FungibleStakedSui,
     ) {
@@ -586,7 +586,7 @@ module liquid_staking::validator_pool {
     }
 
     public(package) fun split_up_to_n_sui_from_sui_pool(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         max_sui_amount_out: u64
     ): Balance<SUI> {
         let sui_amount_out = min(self.sui_pool.value(), max_sui_amount_out);
@@ -599,9 +599,9 @@ module liquid_staking::validator_pool {
     }
 
     public(package) fun unstake_approx_n_sui_from_validator(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         system_state: &mut SuiSystemState,
-        validator_index: u64, 
+        validator_index: u64,
         unstake_sui_amount: u64,
         ctx: &mut TxContext
     ): u64 {
@@ -615,9 +615,9 @@ module liquid_staking::validator_pool {
 
     // unstake output amount [0, n + 1e9 * exchange_rate)
     public(package) fun unstake_approx_n_sui_from_active_stake(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         system_state: &mut SuiSystemState,
-        validator_index: u64, 
+        validator_index: u64,
         target_unstake_sui_amount: u64,
         ctx: &mut TxContext
     ): u64 {
@@ -632,8 +632,8 @@ module liquid_staking::validator_pool {
 
         let fungible_staked_sui_amount = validator_info.active_stake.borrow().value();
         let total_sui_amount = get_sui_amount(
-            &validator_info.exchange_rate, 
-            fungible_staked_sui_amount 
+            &validator_info.exchange_rate,
+            fungible_staked_sui_amount
         );
 
         let target_unstake_sui_amount = max(target_unstake_sui_amount, MIN_STAKE_THRESHOLD);
@@ -661,9 +661,9 @@ module liquid_staking::validator_pool {
 
     // unstake output amount [0, n + 1e9) Sui
     public(package) fun unstake_approx_n_sui_from_inactive_stake(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         system_state: &mut SuiSystemState,
-        validator_index: u64, 
+        validator_index: u64,
         target_unstake_sui_amount: u64,
         ctx: &mut TxContext
     ): u64 {
@@ -707,14 +707,14 @@ module liquid_staking::validator_pool {
             };
             let total_weight = self.total_weight as u128;
             let mut i = self.validators().length();
-            
+
             while (i > 0 && self.sui_pool.value() < max_sui_amount_out) {
                 i = i - 1;
 
-                let to_unstake_i = 1 + (self.validator_infos[i].assigned_weight as u128 
+                let to_unstake_i = 1 + (self.validator_infos[i].assigned_weight as u128
                                         * ((to_unstake)as u128)
                                         / total_weight);
-                                
+
                 self.unstake_approx_n_sui_from_validator(
                     system_state,
                     i,
@@ -741,7 +741,7 @@ module liquid_staking::validator_pool {
             while (i > 0 && self.sui_pool.value() < max_sui_amount_out) {
                 i = i - 1;
                 let to_unstake_i = max_sui_amount_out - self.sui_pool.value();
-                                
+
                 self.unstake_approx_n_sui_from_validator(
                     system_state,
                     i,
@@ -764,9 +764,9 @@ module liquid_staking::validator_pool {
     }
 
     fun take_some_active_stake(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         system_state: &mut SuiSystemState,
-        validator_index: u64, 
+        validator_index: u64,
         fungible_staked_sui_amount: u64,
         ctx: &mut TxContext
     ): Balance<SUI> {
@@ -782,9 +782,9 @@ module liquid_staking::validator_pool {
     }
 
     fun take_all_active_stake(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         system_state: &mut SuiSystemState,
-        validator_index: u64, 
+        validator_index: u64,
         ctx: &TxContext
     ): Balance<SUI> {
         let validator_info = &mut self.validator_infos[validator_index];
@@ -796,8 +796,8 @@ module liquid_staking::validator_pool {
     }
 
     fun take_some_inactive_stake(
-        self: &mut ValidatorPool, 
-        validator_index: u64, 
+        self: &mut ValidatorPool,
+        validator_index: u64,
         sui_amount_out: u64,
         ctx: &mut TxContext
     ): StakedSui {
@@ -812,8 +812,8 @@ module liquid_staking::validator_pool {
     }
 
     fun take_all_inactive_stake(
-        self: &mut ValidatorPool, 
-        validator_index: u64, 
+        self: &mut ValidatorPool,
+        validator_index: u64,
     ): StakedSui {
         let validator_info = &mut self.validator_infos[validator_index];
         let stake = validator_info.inactive_stake.extract();
@@ -824,7 +824,7 @@ module liquid_staking::validator_pool {
     }
 
     fun get_or_add_validator_index_by_staking_pool_id_mut(
-        self: &mut ValidatorPool, 
+        self: &mut ValidatorPool,
         system_state: &mut SuiSystemState,
         staking_pool_id: ID,
         ctx: &mut TxContext

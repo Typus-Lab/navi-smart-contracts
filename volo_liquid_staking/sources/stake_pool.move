@@ -1,7 +1,7 @@
 /// Module: stake_pool
 /// The stake_pool module provides entry functions for staking and unstaking for the LST.
 /// It also provides a set of functions for managing the stake pool.
-module liquid_staking::stake_pool {
+module volo_liquid_staking::stake_pool {
     use sui::{
         balance::{Self, Balance},
         coin::{Self, Coin},
@@ -12,7 +12,7 @@ module liquid_staking::stake_pool {
         vec_map::{VecMap}
     };
 
-    use liquid_staking::{
+    use volo_liquid_staking::{
         fee_config::{Self, FeeConfig},
         validator_pool::{Self, ValidatorPool},
         manage::{Self, Manage},
@@ -52,7 +52,7 @@ module liquid_staking::stake_pool {
     }
 
     /* Administrator Caps */
-    public struct AdminCap has key, store { 
+    public struct AdminCap has key, store {
         id: UID
     }
 
@@ -139,7 +139,7 @@ module liquid_staking::stake_pool {
         );
 
         transfer::public_transfer(stake_pool, ctx.sender());
-        
+
         // mint 2 operator caps and 1 admin cap
         transfer::public_transfer(OperatorCap { id: object::new(ctx) }, ctx.sender());
         transfer::public_transfer(OperatorCap { id: object::new(ctx) }, ctx.sender());
@@ -174,10 +174,10 @@ module liquid_staking::stake_pool {
     /* User Operations */
     #[allow(lint(self_transfer))]
     public entry fun stake_entry(
-        self: &mut StakePool, 
+        self: &mut StakePool,
         metadata: &mut Metadata<CERT>,
-        system_state: &mut SuiSystemState, 
-        sui: Coin<SUI>, 
+        system_state: &mut SuiSystemState,
+        sui: Coin<SUI>,
         ctx: &mut TxContext
     ) {
         self.manage.check_version();
@@ -187,10 +187,10 @@ module liquid_staking::stake_pool {
 
     #[allow(lint(self_transfer))]
     public entry fun delegate_stake_entry(
-        self: &mut StakePool, 
+        self: &mut StakePool,
         metadata: &mut Metadata<CERT>,
-        system_state: &mut SuiSystemState, 
-        sui: Coin<SUI>, 
+        system_state: &mut SuiSystemState,
+        sui: Coin<SUI>,
         v_address: address,
         ctx: &mut TxContext
     ) {
@@ -199,10 +199,10 @@ module liquid_staking::stake_pool {
     }
 
     public fun delegate_stake(
-        self: &mut StakePool, 
+        self: &mut StakePool,
         metadata: &mut Metadata<CERT>,
-        system_state: &mut SuiSystemState, 
-        sui: Coin<SUI>, 
+        system_state: &mut SuiSystemState,
+        sui: Coin<SUI>,
         v_address: address,
         ctx: &mut TxContext
     ): Coin<CERT> {
@@ -217,10 +217,10 @@ module liquid_staking::stake_pool {
     }
 
     public fun stake(
-        self: &mut StakePool, 
+        self: &mut StakePool,
         metadata: &mut Metadata<CERT>,
-        system_state: &mut SuiSystemState, 
-        sui: Coin<SUI>, 
+        system_state: &mut SuiSystemState,
+        sui: Coin<SUI>,
         ctx: &mut TxContext
     ): Coin<CERT> {
         self.manage.check_version();
@@ -238,7 +238,7 @@ module liquid_staking::stake_pool {
         // deduct fees
         let mint_fee_amount = self.fee_config.calculate_stake_fee(sui_balance.value());
         self.fees.join(sui_balance.split(mint_fee_amount));
-        
+
         let lst_mint_amount = self.sui_amount_to_lst_amount(metadata, sui_balance.value());
         assert!(lst_mint_amount > 0, EZeroMintAmount);
 
@@ -266,7 +266,7 @@ module liquid_staking::stake_pool {
     public entry fun unstake_entry(
         self: &mut StakePool,
         metadata: &mut Metadata<CERT>,
-        system_state: &mut SuiSystemState, 
+        system_state: &mut SuiSystemState,
         cert: Coin<CERT>,
         ctx: &mut TxContext
     ) {
@@ -278,7 +278,7 @@ module liquid_staking::stake_pool {
     public fun unstake(
         self: &mut StakePool,
         metadata: &mut Metadata<CERT>,
-        system_state: &mut SuiSystemState, 
+        system_state: &mut SuiSystemState,
         lst: Coin<CERT>,
         ctx: &mut TxContext
     ): Coin<SUI> {
@@ -296,7 +296,7 @@ module liquid_staking::stake_pool {
 
         // deduct fee
         let redeem_fee_amount = self.fee_config.calculate_unstake_fee(sui.value());
-        let redistribution_amount = 
+        let redistribution_amount =
             if(total_lst_supply(metadata) == lst.value()) {
                 0
             } else {
@@ -502,9 +502,9 @@ module liquid_staking::stake_pool {
 
     // returns true if the object was refreshed
     public fun refresh(
-        self: &mut StakePool, 
+        self: &mut StakePool,
         metadata: &Metadata<CERT>,
-        system_state: &mut SuiSystemState, 
+        system_state: &mut SuiSystemState,
         ctx: &mut TxContext
     ): bool {
         self.manage.check_version();
@@ -517,8 +517,8 @@ module liquid_staking::stake_pool {
             let new_total_supply = self.total_sui_supply();
 
             let reward_fee = if (new_total_supply > old_total_supply) {
-                (((new_total_supply - old_total_supply) as u128) 
-                * (self.fee_config.reward_fee_bps() as u128) 
+                (((new_total_supply - old_total_supply) as u128)
+                * (self.fee_config.reward_fee_bps() as u128)
                 / (BPS_MULTIPLIER as u128)) as u64
             } else {
                 0
@@ -608,7 +608,7 @@ module liquid_staking::stake_pool {
         self.lst_amount_to_sui_amount(metadata, SUI_MIST)
     }
 
-    // publish ratio in volo v1 format(1e18) 
+    // publish ratio in volo v1 format(1e18)
     public fun publish_ratio(self: &StakePool, metadata: &Metadata<CERT>) {
         let e9 = 1_000_000_000;
         let e18_ratio = (self.get_ratio(metadata) as u256) * (e9 as u256);
@@ -626,7 +626,7 @@ module liquid_staking::stake_pool {
     }
 
     public fun sui_amount_to_lst_amount(
-        self: &StakePool, 
+        self: &StakePool,
         metadata: &Metadata<CERT>,
         sui_amount: u64
     ): u64 {
@@ -645,7 +645,7 @@ module liquid_staking::stake_pool {
     }
 
     public fun lst_amount_to_sui_amount(
-        self: &StakePool, 
+        self: &StakePool,
         metadata: &Metadata<CERT>,
         lst_amount: u64
     ): u64 {
@@ -655,7 +655,7 @@ module liquid_staking::stake_pool {
         assert!(total_lst_supply > 0, EZeroSupply);
 
         let sui_amount = (total_sui_supply as u128)
-            * (lst_amount as u128) 
+            * (lst_amount as u128)
             / (total_lst_supply as u128);
 
         sui_amount as u64

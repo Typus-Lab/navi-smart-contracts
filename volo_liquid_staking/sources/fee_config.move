@@ -1,4 +1,4 @@
-module liquid_staking::fee_config {
+module volo_liquid_staking::fee_config {
     use sui::bag::{Self, Bag};
 
     const EInvalidFee: u64 = 20001;
@@ -13,7 +13,7 @@ module liquid_staking::fee_config {
     public struct FeeConfig has store {
         stake_fee_bps: u64, // fee for stake operation
         unstake_fee_bps: u64, // fee for unstake operation
-        reward_fee_bps: u64, // fee for staking reward 
+        reward_fee_bps: u64, // fee for staking reward
         unstake_fee_redistribution_bps: u64, // fee for unstake fee redistribution
         extra_fields: Bag // reserved for future use
     }
@@ -63,7 +63,7 @@ module liquid_staking::fee_config {
         self.unstake_fee_redistribution_bps = fee;
         self.validate_fees();
     }
-    
+
     public fun validate_fees(fees: &FeeConfig) {
         assert!(fees.stake_fee_bps <= MAX_STAKE_FEE_BPS, EInvalidFee);
         assert!(fees.unstake_fee_bps <= MAX_UNSTAKE_FEE_BPS, EInvalidFee);
@@ -91,7 +91,7 @@ module liquid_staking::fee_config {
 
     public(package) fun calculate_reward_fee(self: &FeeConfig, before_balance: u64, after_balance: u64): u64 {
         let reward_fee = if (after_balance > before_balance) {
-                ((after_balance - before_balance) as u128) 
+                ((after_balance - before_balance) as u128)
                 * (self.reward_fee_bps() as u128)
                 / BPS_MULTIPLIER
             } else {

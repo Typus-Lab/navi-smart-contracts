@@ -13,8 +13,8 @@ module lending_core::pool_manager {
     use lending_core::error::{Self};
 
     use sui_system::sui_system::{SuiSystemState};
-    use liquid_staking::stake_pool::{Self, StakePool, OperatorCap};
-    use liquid_staking::cert::{Metadata, CERT};
+    use volo_liquid_staking::stake_pool::{Self, StakePool, OperatorCap};
+    use volo_liquid_staking::cert::{Metadata, CERT};
 
     use sui::sui::{SUI};
 
@@ -25,11 +25,11 @@ module lending_core::pool_manager {
         id: UID,
         // the theoretical sui amount of the pool
         // original_sui_amount = sum(sui_deposit) - sum(sui_withdraw)
-        original_sui_amount: u64, 
+        original_sui_amount: u64,
         vsui_balance: Balance<CERT>,
         temp_sui_balance: Bag,
         enabled_manage: bool,
-        // a target sui amount for the pool, 
+        // a target sui amount for the pool,
         // the extra sui amount will be staked to vsui
         target_sui_amount: u64,
         vsui_stake_pool: StakePool,
@@ -120,11 +120,11 @@ module lending_core::pool_manager {
             // skip if the unstake amount is too small
             if (vsui_to_unstake > MIN_OPERATION_AMOUNT) {
                 // unstake all if left vsui is less than MIN_OPERATION_AMOUNT
-                // otherwise, the left vsui will not meet the threshold for an unstake in the future 
+                // otherwise, the left vsui will not meet the threshold for an unstake in the future
                 if (balance::value(pool_vsui_balance) < vsui_to_unstake + MIN_OPERATION_AMOUNT) {
                     vsui_to_unstake = balance::value(pool_vsui_balance);
                 };
-                
+
                 let vsui_balance = balance::split(pool_vsui_balance, vsui_to_unstake);
                 let vsui_coin = coin::from_balance(vsui_balance, ctx);
                 let sui_coin = stake_pool::unstake(stake_pool, metadata, system_state, vsui_coin, ctx);
@@ -166,7 +166,7 @@ module lending_core::pool_manager {
         let vsui_to_unstake = stake_pool::sui_amount_to_lst_amount(stake_pool, metadata, required_sui_amount);
 
         // A sanity check if we have no enough vsui
-        // This should not happen as the vsui will keep growing 
+        // This should not happen as the vsui will keep growing
         // Also, if the vsui is too small, unstake it all
         if (vsui_to_unstake + MIN_OPERATION_AMOUNT > balance::value(pool_vsui_balance)) {
             vsui_to_unstake = balance::value(pool_vsui_balance);
@@ -178,7 +178,7 @@ module lending_core::pool_manager {
         let sui_balance = coin::into_balance(sui_coin);
 
         // Casting: use a bag to convert SUI to CoinType
-        let convert_amount = balance::value(&sui_balance); 
+        let convert_amount = balance::value(&sui_balance);
         let principal_in_sui: &mut Balance<SUI> = bag::borrow_mut(&mut manager.temp_sui_balance, SuiKey {});
         balance::join(principal_in_sui, sui_balance);
         let principal_in_raw: &mut Balance<CoinType> = bag::borrow_mut(&mut manager.temp_sui_balance, SuiKey {});
@@ -216,11 +216,11 @@ module lending_core::pool_manager {
         let vsui_to_take = stake_pool::sui_amount_to_lst_amount(&manager.vsui_stake_pool, &manager.vsui_metadata, treasury_sui_amount);
         if (vsui_to_take > balance::value(&manager.vsui_balance)) {
             vsui_to_take = balance::value(&manager.vsui_balance);
-        };    
+        };
         let vsui_balance = balance::split(&mut manager.vsui_balance, vsui_to_take);
 
         // check if left vsui is enough for unstake, if not, abort
-        assert!(balance::value(&manager.vsui_balance) == 0 
+        assert!(balance::value(&manager.vsui_balance) == 0
         || balance::value(&manager.vsui_balance) > MIN_OPERATION_AMOUNT, error::insufficient_balance());
 
         emit(StakingTreasuryWithdrawn {
