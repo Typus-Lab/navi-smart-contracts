@@ -14,6 +14,7 @@ module lending_core::manage_test {
     use lending_core::base;
     use lending_core::lending;
     use lending_core::manage;
+    use lending_core::ray_math;
     use lending_core::base_lending_tests;
     use lending_core::pool::{Self, Pool};
     use lending_core::sui_test::{Self, SUI_TEST};
