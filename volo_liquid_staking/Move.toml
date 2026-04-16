@@ -4,5 +4,10 @@ version = "0.0.1"
 published-at = "0x634511c660964940915acb37dde75963e35f2d1b0a034b41e2da8f3e9d1491ae"
 edition = "2024"
 
+[dependencies.sui_system]
+git = "https://github.com/MystenLabs/sui.git"
+subdir = "crates/sui-framework/packages/sui-system"
+rev = "mainnet"
+
 [addresses]
 volo_liquid_staking = "0x634511c660964940915acb37dde75963e35f2d1b0a034b41e2da8f3e9d1491ae"
