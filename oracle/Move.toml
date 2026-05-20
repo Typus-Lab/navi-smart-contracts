@@ -11,7 +11,7 @@ rev = "master"
 [dependencies.Pyth]
 git = "https://github.com/Typus-Lab/pyth-crosschain.git"
 subdir = "target_chains/sui/contracts"
-rev = "main"
+rev = "mainnet"
 
 [addresses]
 oracle = "0xca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f"
